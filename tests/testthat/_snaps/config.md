@@ -47,11 +47,30 @@
 ---
 
     Code
+      snowflake_connection("test6", .config_dir = dir)
+    Message
+      <Snowflake connection: test6>
+      account: "testorg-test_account"
+      authenticator: "oauth"
+      token_file_path: "/test/token"
+      user: "user"
+
+---
+
+    Code
       snowflake_connection("test5", .config_dir = dir)
     Condition
       Error in `snowflake_connection()`:
       ! The test5 connection is missing the required account field.
       i Try defining an account in the [test5] section of './connections.toml'.
+
+---
+
+    Code
+      snowflake_connection("test7", .config_dir = dir)
+    Condition
+      Error in `snowflake_connection()`:
+      ! One of `token` or `token_file_path` is required when using authenticator "oauth".
 
 ---
 

@@ -9,10 +9,7 @@ snowflake_credentials <- function(params,
   role <- role %||% params$role
   switch(
     params$authenticator,
-    oauth = list(
-      Authorization = paste("Bearer", params$token),
-      `X-Snowflake-Authorization-Token-Type` = "OAUTH"
-    ),
+    oauth = oauth_credentials(params$token, params$token_file_path),
     SNOWFLAKE_JWT = keypair_credentials(
       account = params$account,
       user = params$user,
@@ -24,5 +21,23 @@ snowflake_credentials <- function(params,
       "Unsupported authenticator: {.str {params$authenticator}}.",
       "i" = "Only OAuth and key-pair authentication are supported."
     ))
+  )
+}
+
+oauth_credentials <- function(token = NULL, token_file = NULL) {
+  if (!is.null(token_file)) {
+    tryCatch(
+      token <- readLines(token_file, warn = FALSE, encoding = "UTF-8"),
+      error = function(e) {
+        cli::cli_abort(
+          "Failed to read OAuth token from {.file {token_file}}.",
+          parent = e
+        )
+      }
+    )
+  }
+  list(
+    Authorization = paste("Bearer", token),
+    `X-Snowflake-Authorization-Token-Type` = "OAUTH"
   )
 }

@@ -25,8 +25,13 @@ test_that("the connections.toml file is parsed correctly", {
   expect_snapshot(snowflake_connection("test2", .config_dir = dir))
   expect_snapshot(snowflake_connection("test3", .config_dir = dir))
   expect_snapshot(snowflake_connection("test4", .config_dir = dir))
+  expect_snapshot(snowflake_connection("test6", .config_dir = dir))
   expect_snapshot(
     snowflake_connection("test5", .config_dir = dir),
+    error = TRUE
+  )
+  expect_snapshot(
+    snowflake_connection("test7", .config_dir = dir),
     error = TRUE
   )
   # There is no default, so omitting `name` is an error.

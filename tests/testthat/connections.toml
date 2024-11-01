@@ -26,3 +26,14 @@ role = "role"
 # Missing the required "account" field.
 user = "user"
 password = "pwd"
+
+[test6]
+account = "testorg-test_account"
+user = "user"
+authenticator = "oauth"
+token_file_path = "/test/token"
+
+[test7]
+account = "testorg-test_account"
+user = "user"
+authenticator = "oauth"

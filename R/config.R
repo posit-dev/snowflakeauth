@@ -54,6 +54,14 @@ snowflake_connection <- function(name = NULL, ..., .config_dir = NULL) {
     params$authenticator <- "SNOWFLAKE_JWT"
   }
 
+  if (params$authenticator == "oauth" && is.null(params$token) &&
+      is.null(params$token_file_path)) {
+    cli::cli_abort(c(
+      "One of {.arg token} or {.arg token_file_path} is required when using
+       authenticator {.str oauth}."
+    ))
+  }
+
   # TODO: Should we check the types of parameters here?
 
   # Redact sensitive data.
