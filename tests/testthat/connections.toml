@@ -1,0 +1,28 @@
+[test1]
+account = "testorg-test_account"
+user = "user"
+token = "token"
+authenticator = "oauth"
+
+[test2]
+account = "testorg-test_account"
+user = "user"
+private_key_file = "file"
+private_key_file_pwd = "pwd"
+
+[test3]
+account = "testorg-test_account"
+user = "user"
+role = "role"
+authenticator = "externalbrowser"
+
+[test4]
+account = "testorg-test_account"
+user = "user"
+password = "pwd"
+role = "role"
+
+[test5]
+# Missing the required "account" field.
+user = "user"
+password = "pwd"
