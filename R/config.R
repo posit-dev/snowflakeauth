@@ -57,9 +57,9 @@ snowflake_connection <- function(name = NULL, ..., .config_dir = NULL) {
   # TODO: Should we check the types of parameters here?
 
   # Redact sensitive data.
-  params$password <- redact(params$password)
-  params$token <- redact(params$token)
-  params$private_key_file_pwd <- redact(params$private_key_file_pwd)
+  params$password <- redact(params[["password"]])
+  params$token <- redact(params[["token"]])
+  params$private_key_file_pwd <- redact(params[["private_key_file_pwd"]])
 
   structure(params, class = c("snowflake_connection", "list"))
 }
