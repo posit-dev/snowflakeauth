@@ -34,6 +34,10 @@ test_that("the connections.toml file is parsed correctly", {
     snowflake_connection("test7", .config_dir = dir),
     error = TRUE
   )
+  expect_snapshot(
+    snowflake_connection("test8", .config_dir = dir),
+    error = TRUE
+  )
   # There is no default, so omitting `name` is an error.
   expect_snapshot(snowflake_connection(.config_dir = dir), error = TRUE)
   # Test overriding a parameter:

@@ -41,7 +41,7 @@ snowflake_connection <- function(name = NULL, ..., .config_dir = NULL) {
   if (is_empty(params$account)) {
     name <- name %||% default_connection_name(config_dir)
     cli::cli_abort(c(
-      "The {.arg account} argument is required when {.file {cfile}} is missing
+      "An {.arg account} parameter is required when {.file {cfile}} is missing
        or empty.",
       i = "Pass {.arg account} or define a {.field [{name}]} section with an
            {.field account} field in {.file {cfile}}."
@@ -58,7 +58,14 @@ snowflake_connection <- function(name = NULL, ..., .config_dir = NULL) {
       is.null(params$token_file_path)) {
     cli::cli_abort(c(
       "One of {.arg token} or {.arg token_file_path} is required when using
-       authenticator {.str oauth}."
+       OAuth authentication."
+    ))
+  }
+
+  if (params$authenticator == "SNOWFLAKE_JWT" && is.null(params$user)) {
+    cli::cli_abort(c(
+      "A {.arg user} parameter is required when using key-pair
+       authentication."
     ))
   }
 

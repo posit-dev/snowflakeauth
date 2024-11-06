@@ -37,3 +37,7 @@ token_file_path = "/test/token"
 account = "testorg-test_account"
 user = "user"
 authenticator = "oauth"
+
+[test8]
+account = "testorg-test_account"
+private_key_file = "file"

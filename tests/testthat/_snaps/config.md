@@ -70,7 +70,15 @@
       snowflake_connection("test7", .config_dir = dir)
     Condition
       Error in `snowflake_connection()`:
-      ! One of `token` or `token_file_path` is required when using authenticator "oauth".
+      ! One of `token` or `token_file_path` is required when using OAuth authentication.
+
+---
+
+    Code
+      snowflake_connection("test8", .config_dir = dir)
+    Condition
+      Error in `snowflake_connection()`:
+      ! A `user` parameter is required when using key-pair authentication.
 
 ---
 
@@ -102,7 +110,7 @@
       snowflake_connection(.config_dir = "/test")
     Condition
       Error in `snowflake_connection()`:
-      ! The `account` argument is required when '/test/connections.toml' is missing or empty.
+      ! An `account` parameter is required when '/test/connections.toml' is missing or empty.
       i Pass `account` or define a [default] section with an account field in '/test/connections.toml'.
 
 ---
