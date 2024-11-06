@@ -84,3 +84,9 @@ test_that("Workbench-managed credentials are detected correctly", {
   )
   expect_snapshot(snowflake_connection())
 })
+
+test_that("ambient credentials are detected correctly", {
+  expect_true(has_a_default_connection("test1", .config_dir = test_path(".")))
+  config_dir <- tempfile("snowflake")
+  expect_false(has_a_default_connection("test1", .config_dir = config_dir))
+})
