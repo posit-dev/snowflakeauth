@@ -2,10 +2,12 @@
 #'
 #' @returns A list of HTTP headers.
 #' @export
-snowflake_credentials <- function(params,
-                                  role = NULL,
-                                  spcs_endpoint = NULL,
-                                  ...) {
+snowflake_credentials <- function(
+  params,
+  role = NULL,
+  spcs_endpoint = NULL,
+  ...
+) {
   role <- role %||% params$role
   switch(
     params$authenticator,

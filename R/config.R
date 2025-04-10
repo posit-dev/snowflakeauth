@@ -119,8 +119,11 @@ snowflake_connection <- function(name = NULL, ..., .config_dir = NULL) {
     params$authenticator <- "SNOWFLAKE_JWT"
   }
 
-  if (params$authenticator == "oauth" && is.null(params$token) &&
-      is.null(params$token_file_path)) {
+  if (
+    params$authenticator == "oauth" &&
+      is.null(params$token) &&
+      is.null(params$token_file_path)
+  ) {
     cli::cli_abort(c(
       "One of {.arg token} or {.arg token_file_path} is required when using
        OAuth authentication."
@@ -147,7 +150,10 @@ snowflake_connection <- function(name = NULL, ..., .config_dir = NULL) {
 #' @export
 print.snowflake_connection <- function(x, ...) {
   params <- x[which(names(x) != "name")]
-  labels <- lapply(names(params), function(x) cli::format_inline("{.field {x}}"))
+  labels <- lapply(
+    names(params),
+    function(x) cli::format_inline("{.field {x}}")
+  )
   items <- lapply(params, function(x) {
     if (inherits(x, "snowflake_redacted")) {
       return(cli::col_grey("<REDACTED>"))
@@ -218,8 +224,11 @@ default_connection_name <- function(config_dir = default_config_dir()) {
 }
 
 has_a_default_connection <- function(...) {
-  tryCatch({
-    snowflake_connection(...)
-    TRUE
-  }, error = function(e) FALSE)
+  tryCatch(
+    {
+      snowflake_connection(...)
+      TRUE
+    },
+    error = function(e) FALSE
+  )
 }

@@ -1,6 +1,11 @@
 # Support for Snowflake key-pair authentication for SPCS and the REST API.
-keypair_credentials <- function(account, user, private_key,
-                                spcs_endpoint = NULL, role = "PUBLIC") {
+keypair_credentials <- function(
+  account,
+  user,
+  private_key,
+  spcs_endpoint = NULL,
+  role = "PUBLIC"
+) {
   jwt <- generate_jwt(account, user, private_key)
   # Important: the SPCS ingress handles key-pair authentication *differently*
   # than the REST API. In particular, we can't pass the signed JWT as a bearer
@@ -63,8 +68,12 @@ generate_jwt <- function(account, user, private_key, iat = NULL, jti = NULL) {
 # handle.
 #
 # See: https://docs.snowflake.com/en/user-guide/oauth-custom#label-oauth-token-exchange
-exchange_jwt_for_token <- function(account_url, jwt, spcs_endpoint,
-                                   role = "PUBLIC") {
+exchange_jwt_for_token <- function(
+  account_url,
+  jwt,
+  spcs_endpoint,
+  role = "PUBLIC"
+) {
   check_installed("httr2", "for token exchange")
   scope <- sprintf("session:role:%s %s", role, spcs_endpoint)
   req <- httr2::request(account_url)
