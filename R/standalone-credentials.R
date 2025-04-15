@@ -1,4 +1,8 @@
 #' Get credentials for a Snowflake connection
+#' @param params a list of connection parameters from `[snowflake_connection()]``
+#' @param role a snowflake entity
+#' @param spcs_endpoint a Snowpark Container Services ingress URL, formatted (*-accountname.snowflakecomputing.app)
+#' @param ... Additional Snowflake connection parameters
 #'
 #' @returns A list of HTTP headers.
 #' @export

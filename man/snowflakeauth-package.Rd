@@ -6,7 +6,7 @@
 \alias{snowflakeauth-package}
 \title{snowflakeauth: Support for authenticating with the 'Snowflake' platform}
 \description{
-TODO
+A toolkit for authenticating with Snowflake. It aims for compatibility with the `connections.toml` and `config.toml` files used by the Python Connector for Snowflake and the Snowflake CLI.
 }
 \author{
 \strong{Maintainer}: Aaron Jacobs \email{aaron.jacobs@posit.co}

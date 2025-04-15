@@ -5,7 +5,9 @@ Authors@R: c(
     person("Aaron", "Jacobs", , "aaron.jacobs@posit.co", role = c("aut", "cre")),
     person("Posit Software, PBC", role = c("cph", "fnd"))
   )
-Description: TODO
+Description: A toolkit for authenticating with Snowflake.
+    It aims for compatibility with the `connections.toml` and `config.toml` files used
+    by the Python Connector for Snowflake and the Snowflake CLI.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Imports:

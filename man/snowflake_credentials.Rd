@@ -6,6 +6,15 @@
 \usage{
 snowflake_credentials(params, role = NULL, spcs_endpoint = NULL, ...)
 }
+\arguments{
+\item{params}{a list of connection parameters from `\code{\link[=snowflake_connection]{snowflake_connection()}}``}
+
+\item{role}{a snowflake entity}
+
+\item{spcs_endpoint}{a Snowpark Container Services ingress URL, formatted (*-accountname.snowflakecomputing.app)}
+
+\item{...}{Additional Snowflake connection parameters}
+}
 \value{
 A list of HTTP headers.
 }
