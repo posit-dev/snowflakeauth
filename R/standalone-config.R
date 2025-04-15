@@ -42,7 +42,7 @@
 #'   for details.
 #'
 #' @returns An object of class `"snowflake_connection"`.
-#' @examplesIf snowflakeauth:::has_a_default_connection()
+#' @examplesIf has_a_default_connection()
 #' # Read the default connection parameters from an existing
 #' # connections.toml file:
 #' conn <- snowflake_connection()
