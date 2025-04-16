@@ -42,7 +42,8 @@
 #'   for details.
 #'
 #' @returns An object of class `"snowflake_connection"`.
-#' @examplesIf has_a_default_connection()
+#' @examples
+#' \dontrun{
 #' # Read the default connection parameters from an existing
 #' # connections.toml file:
 #' conn <- snowflake_connection()
@@ -55,6 +56,7 @@
 #'   schema = "myschema",
 #'   warehouse = "mywarehouse"
 #' )
+#' }
 #' @examples
 #' # Pass connection parameters manually, which is useful if there is no
 #' # connections.toml file. For example, to use key-pair authentication:
