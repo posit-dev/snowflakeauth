@@ -65,7 +65,6 @@
 #'   user = "me",
 #'   private_key = "rsa_key.p8"
 #' )
-#' @export
 snowflake_connection <- function(name = NULL, ..., .config_dir = NULL) {
   params <- list(name = name)
   config_dir <- .config_dir %||% default_config_dir()
@@ -149,7 +148,6 @@ snowflake_connection <- function(name = NULL, ..., .config_dir = NULL) {
   structure(params, class = c("snowflake_connection", "list"))
 }
 
-#' @export
 print.snowflake_connection <- function(x, ...) {
   params <- x[which(names(x) != "name")]
   labels <- lapply(
@@ -178,7 +176,6 @@ redact <- function(x) {
   x
 }
 
-#' @export
 print.snowflake_redacted <- function(x, ...) {
   cat(cli::col_grey("<REDACTED>"))
 }
