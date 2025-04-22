@@ -5,6 +5,7 @@
 #' @param ... Additional Snowflake connection parameters
 #'
 #' @returns A list of HTTP headers.
+#' @keywords internal
 snowflake_credentials <- function(
   params,
   role = NULL,
