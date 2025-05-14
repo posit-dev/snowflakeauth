@@ -6,6 +6,7 @@
 <!-- badges: start -->
 
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+[![R-CMD-check](https://github.com/posit-dev/snowflakeauth/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/posit-dev/snowflakeauth/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `snowflakeauth` is a toolkit for authenticating with Snowflake. It aims
@@ -28,7 +29,7 @@ You can install the development version of `snowflakeauth` from
 
 ``` r
 # install.packages("pak")
-pak::pak("atheriel/snowflakeauth")
+pak::pak("posit-dev/snowflakeauth")
 ```
 
 ## Example
@@ -42,18 +43,8 @@ named connection, for that matter):
 library(snowflakeauth)
 
 snowflake_connection()
-#> Error in `snowflake_connection()`:
-#> ! The `account` argument is required when
-#>   '~/.config/snowflake/connections.toml' is missing or empty.
-#> ℹ Pass `account` or define a [default] section with an account field in
-#>   '~/.config/snowflake/connections.toml'.
 
 snowflake_connection(name = "testing")
-#> Error in `snowflake_connection()`:
-#> ! The `account` argument is required when
-#>   '~/.config/snowflake/connections.toml' is missing or empty.
-#> ℹ Pass `account` or define a [testing] section with an account field in
-#>   '~/.config/snowflake/connections.toml'.
 ```
 
 or you can define the parameters of a connection manually:
@@ -65,22 +56,12 @@ snowflake_connection(
   private_key_file = "rsa_key.p8",
   private_key_file_pwd = "supersecret"
 )
-#> <Snowflake connection>
-#> account: "myaccount"
-#> user: "me"
-#> private_key_file: "rsa_key.p8"
-#> private_key_file_pwd: <REDACTED>
-#> authenticator: "SNOWFLAKE_JWT"
 
 snowflake_connection(
   account = "myaccount",
   user = "me",
   authenticator = "externalbrowser"
 )
-#> <Snowflake connection>
-#> account: "myaccount"
-#> user: "me"
-#> authenticator: "externalbrowser"
 ```
 
 These parameters can then be used to retrieve credentials, which take
@@ -95,11 +76,6 @@ conn <- snowflake_connection(
 )
 
 snowflake_credentials(conn)
-#> $Authorization
-#> [1] "Bearer token"
-#> 
-#> $`X-Snowflake-Authorization-Token-Type`
-#> [1] "OAUTH"
 ```
 
 ## Limitations

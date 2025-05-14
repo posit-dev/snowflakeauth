@@ -8,6 +8,13 @@
 \description{
 A toolkit for authenticating with Snowflake. It aims for compatibility with the `connections.toml` and `config.toml` files used by the Python Connector for Snowflake and the Snowflake CLI.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://posit-dev.github.io/snowflakeauth/}
+}
+
+}
 \author{
 \strong{Maintainer}: Aaron Jacobs \email{aaron.jacobs@posit.co}
 
