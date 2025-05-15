@@ -2,3 +2,8 @@
 ^README\.Rmd$
 ^\.Rproj\.user$
 ^snowflakeauth\.Rproj$
+^\.github$
+^codecov\.yml$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
