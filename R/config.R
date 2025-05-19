@@ -69,85 +69,72 @@
 #' }
 #' @export
 snowflake_connection <- function(name = NULL, ..., .config_dir = NULL) {
-  params <- list(name = name)
+  # Load configuration
   config_dir <- .config_dir %||% default_config_dir()
-  cfile <- file.path(config_dir, "connections.toml")
+  cfg <- load_config(name, config_dir)
 
-  # TODO: How should we distinguish "no ambient Snowflake credentials" here?
+  # Extract connection data
+  connections <- cfg$connections
+  connection_name <- cfg$connection_name
+  connection_file <- cfg$connection_file %||%
+    file.path(config_dir, "connections.toml")
 
-  if (file.exists(cfile)) {
-    connections <- RcppTOML::parseTOML(cfile, fromFile = TRUE)
-    if (!is.null(name) && is.null(connections[[name]])) {
-      cli::cli_abort(c(
-        "Unknown connection {.str {name}}.",
-        i = "Try defining a {.field [{name}]} section in {.file {cfile}} or
-             omit the {.arg name} parameter to use the default connection
-             instead."
-      ))
-    }
-    name <- name %||% default_connection_name(config_dir)
-    if (is.null(connections[[name]])) {
-      cli::cli_abort(c(
-        "The default connection is missing.",
-        i = "Try defining a {.field [{name}]} section in {.file {cfile}}."
-      ))
-    }
-    params <- c(list(name = name), connections[[name]])
-    if (is_empty(params$account)) {
-      cli::cli_abort(c(
-        "The {.field {name}} connection is missing the required
-        {.field account} field.",
-        i = "Try defining an {.field account} in the {.field [{name}]} section
-            of {.file {cfile}}."
-      ))
-    }
-  }
-
-  # TODO: Should we check for conflicts in the account parameter, e.g. if
-  # SNOWFLAKE_ACCOUNT differs from the connection's account?
-
-  params <- utils::modifyList(params, list(...))
-  if (is_empty(params$account)) {
-    name <- name %||% default_connection_name(config_dir)
+  # Error if the specified connection doesn't exist
+  if (!is.null(connection_name) && is.null(connections[[connection_name]])) {
     cli::cli_abort(c(
-      "An {.arg account} parameter is required when {.file {cfile}} is missing
-       or empty.",
-      i = "Pass {.arg account} or define a {.field [{name}]} section with an
-           {.field account} field in {.file {cfile}}."
+      "Unknown connection {.str {connection_name}}.",
+      i = "Try defining a {.field [{connection_name}]} section in {.file {connection_file}} or
+           omit the {.arg name} parameter to use the default connection instead."
     ))
   }
 
-  # Fixup the authenticator if necessary.
+  # Initialize params with connection from config
+  params <- list(name = connection_name)
+  if (!is.null(connection_name) && !is.null(connections[[connection_name]])) {
+    params <- c(params, connections[[connection_name]])
+  }
+
+  # Override with explicitly provided parameters
+  params <- utils::modifyList(params, list(...))
+
+  # Validate that account is provided
+  if (is_empty(params$account)) {
+    cli::cli_abort(c(
+      "An {.arg account} parameter is required when {.file {connection_file}} is missing or empty.",
+      i = "Pass {.arg account} or define a {.field [{connection_name}]} section with an {.field account} field in {.file {connection_file}}."
+    ))
+  }
+
+  # Setup authenticator
   params$authenticator <- params$authenticator %||% "snowflake"
   if (!is_empty(params$private_key) || !is_empty(params$private_key_file)) {
     params$authenticator <- "SNOWFLAKE_JWT"
   }
 
+  # Validate OAuth configuration
   if (
     params$authenticator == "oauth" &&
       is.null(params$token) &&
       is.null(params$token_file_path)
   ) {
     cli::cli_abort(c(
-      "One of {.arg token} or {.arg token_file_path} is required when using
-       OAuth authentication."
+      "One of {.arg token} or {.arg token_file_path} is required when using OAuth authentication."
     ))
   }
 
+  # Validate key-pair authentication
   if (params$authenticator == "SNOWFLAKE_JWT" && is.null(params$user)) {
     cli::cli_abort(c(
-      "A {.arg user} parameter is required when using key-pair
-       authentication."
+      "A {.arg user} parameter is required when using key-pair authentication."
     ))
   }
 
-  # TODO: Should we check the types of parameters here?
-
-  # Redact sensitive data.
+  # Redact sensitive data
   params$password <- redact(params[["password"]])
   params$token <- redact(params[["token"]])
   params$private_key_file_pwd <- redact(params[["private_key_file_pwd"]])
 
+  # Return structured connection object
   structure(params, class = c("snowflake_connection", "list"))
 }
 
@@ -185,47 +172,202 @@ print.snowflake_redacted <- function(x, ...) {
   cat(cli::col_grey("<REDACTED>"))
 }
 
-# See: https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect#connecting-using-the-connections-toml-file
-default_config_dir <- function(os = NULL) {
-  home <- Sys.getenv("SNOWFLAKE_HOME", "~/.snowflake")
-  if (dir.exists(home)) {
-    return(home)
-  }
-  if (nzchar(env <- Sys.getenv("XDG_CONFIG_HOME"))) {
-    return(file.path(env, "snowflake"))
-  }
-  # System-specific paths.
-  if (is.null(os)) {
-    if (.Platform$OS.type == "windows") {
-      os <- "win"
-    } else if (Sys.info()["sysname"] == "Darwin") {
-      os <- "mac"
-    } else {
-      os <- "unix"
+
+#' Load Snowflake configuration from all available sources
+#'
+#' Loads and consolidates Snowflake configuration from multiple sources with proper
+#' precedence handling. Configuration sources include:
+#'
+#' 1. `connections.toml` and `config.toml` files
+#' 2. Environment variables (both generic and connection-specific)
+#' 3. User-provided parameters
+#'
+#' The function follows Snowflake's client behavior for resolving connection names
+#' and handling conflicts between configuration sources.
+#'
+#' @param name A named connection to use. If NULL, the default connection will be used
+#' @param config_dir The directory containing Snowflake configuration files.
+#'   Defaults to the result of `default_config_dir()`.
+#'
+#' @return A list with the following components:
+#'   \item{connections}{List of available connection configurations}
+#'   \item{connection_name}{The resolved connection name to use}
+#'   \item{connection_file}{Path to the configuration file that was loaded}
+#'
+#' @keywords internal
+load_config <- function(name = NULL, config_dir = default_config_dir()) {
+  # Initialize result structure
+  result <- list(
+    connections = list(),
+    connection_name = NULL,
+    connection_file = NULL
+  )
+
+  # File paths
+  config_toml <- file.path(config_dir, "config.toml")
+  connections_toml <- file.path(config_dir, "connections.toml")
+
+  # Step 1: Resolve connection name with proper precedence:
+  # 1. Explicit name parameter
+  # 2. SNOWFLAKE_DEFAULT_CONNECTION_NAME environment variable
+  # 3. default_connection_name from config.toml
+  # 4. "default" section in connections.toml
+
+  # Set from explicit parameter if provided
+  if (!is.null(name)) {
+    result$connection_name <- name
+  } else {
+    # Check environment variable
+    env_connection_name <- Sys.getenv("SNOWFLAKE_DEFAULT_CONNECTION_NAME", "")
+    if (nzchar(env_connection_name)) {
+      result$connection_name <- env_connection_name
     }
   }
-  switch(
-    os,
+
+  # Step 2: Load configuration files
+  has_config_toml <- file.exists(config_toml)
+  has_connections_toml <- file.exists(connections_toml)
+
+  # Load config.toml
+  if (has_config_toml) {
+    config <- RcppTOML::parseTOML(config_toml, fromFile = TRUE)
+
+    # If no connection name yet, get from config.toml
+    if (
+      is.null(result$connection_name) &&
+        !is.null(config$default_connection_name)
+    ) {
+      result$connection_name <- config$default_connection_name
+    }
+
+    # Extract connections section if it exists
+    if (!is.null(config$connections)) {
+      result$connections <- config$connections
+      result$connection_file <- config_toml
+    }
+  }
+
+  # Load connections.toml (takes precedence if both exist)
+  if (has_connections_toml) {
+    connections <- RcppTOML::parseTOML(connections_toml, fromFile = TRUE)
+
+    # If both files exist, inform user we're using connections.toml
+    if (has_config_toml && length(connections) > 0) {
+      cli::cli_inform(c(
+        "!" = "Both {.file connections.toml} and {.file config.toml} exist. Using {.file connections.toml}."
+      ))
+
+      # Validate that connection name from config.toml exists in connections.toml
+      if (
+        !is.null(result$connection_name) &&
+          result$connection_name != "default" &&
+          is.null(connections[[result$connection_name]])
+      ) {
+        cli::cli_abort(c(
+          "{.field default_connection_name} is set to {.str {result$connection_name}} in {.file config.toml},
+          but the connection does not exist in {.file connections.toml}.",
+          i = "Try defining a {.field [{result$connection_name}]} section in {.file connections.toml}."
+        ))
+      }
+    }
+
+    # Set connections in result
+    result$connections <- connections
+    result$connection_file <- connections_toml
+
+    # Set default connection name if not already set and "default" exists
+    if (is.null(result$connection_name) && !is.null(connections[["default"]])) {
+      result$connection_name <- "default"
+    }
+  }
+
+  # Step 3: Process environment variables
+  env_config <- parse_env_vars()
+
+  # Apply environment variables to connections
+  if (
+    !is.null(result$connection_name) &&
+      !is.null(env_config[[result$connection_name]])
+  ) {
+    # Apply connection-specific env vars
+    if (is.null(result$connections[[result$connection_name]])) {
+      result$connections[[result$connection_name]] <- list()
+    }
+    result$connections[[result$connection_name]] <- utils::modifyList(
+      result$connections[[result$connection_name]],
+      env_config[[result$connection_name]]
+    )
+  }
+
+  # Apply generic environment variables if no specific connection exists
+  if (is.null(result$connection_name) && !is.null(env_config$default)) {
+    # Create a default connection from generic env vars
+    result$connections$default <- env_config$default
+    result$connection_name <- "default"
+  } else if (!is.null(env_config$default)) {
+    # Apply generic env vars as fallback to specific connection
+    if (!is.null(result$connection_name)) {
+      if (is.null(result$connections[[result$connection_name]])) {
+        result$connections[[result$connection_name]] <- env_config$default
+      } else {
+        # Only apply values that don't already exist in the connection
+        for (name in names(env_config$default)) {
+          if (is.null(result$connections[[result$connection_name]][[name]])) {
+            result$connections[[result$connection_name]][[
+              name
+            ]] <- env_config$default[[name]]
+          }
+        }
+      }
+    }
+  }
+
+  result
+}
+
+#' Get the default Snowflake configuration directory
+# See: https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect#connecting-using-the-connections-toml-file
+#'
+#' @param os Operating system identifier; one of "win", "mac", or "unix".
+#'   If NULL (the default), the value is determined automatically.
+#'
+#' @return Path to the default Snowflake configuration directory
+#' @keywords internal
+default_config_dir <- function(os = NULL) {
+  # Check environment variables first
+  snowflake_home_env <- Sys.getenv("SNOWFLAKE_HOME")
+  if (nzchar(snowflake_home_env)) {
+    return(snowflake_home_env)
+  }
+
+  snowflake_home <- path.expand("~/.snowflake")
+  if (dir.exists(snowflake_home)) {
+    return(snowflake_home)
+  }
+
+  xdg_home <- Sys.getenv("XDG_CONFIG_HOME")
+  if (nzchar(xdg_home)) {
+    return(file.path(xdg_home, "snowflake"))
+  }
+
+  # Detect OS if not provided
+  if (is.null(os)) {
+    os <- if (.Platform$OS.type == "windows") "win" else if (
+      Sys.info()["sysname"] == "Darwin"
+    )
+      "mac" else "unix"
+  }
+
+  # OS-specific paths
+  os_paths <- list(
     win = file.path(Sys.getenv("LOCALAPPDATA"), "snowflake"),
     mac = "~/Library/Application Support/snowflake",
     unix = "~/.config/snowflake"
   )
+
+  os_paths[[os]]
 }
 
-# See: https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect#setting-a-default-connection
-default_connection_name <- function(config_dir = default_config_dir()) {
-  # The environment variable takes precedence.
-  if (nzchar(env <- Sys.getenv("SNOWFLAKE_DEFAULT_CONNECTION_NAME"))) {
-    return(env)
-  }
-  name <- "default"
-  cfg <- file.path(config_dir, "config.toml")
-  if (file.exists(cfg)) {
-    cfg <- RcppTOML::parseTOML(cfg, fromFile = TRUE)
-    name <- cfg$default_connection_name %||% name
-  }
-  name
-}
 
 has_a_default_connection <- function(...) {
   tryCatch(
@@ -235,4 +377,89 @@ has_a_default_connection <- function(...) {
     },
     error = function(e) FALSE
   )
+}
+
+
+#' Parse environment variables for Snowflake connections
+#'
+#' Extracts Snowflake connection parameters from environment variables
+#'
+#' Handles
+#'
+#' 1. Generic variables with `SNOWFLAKE_` prefix (e.g., `SNOWFLAKE_ACCOUNT`)
+#' 2. Connection-specific variables with `SNOWFLAKE_CONNECTIONS_NAME_` prefix
+#'    (e.g., `SNOWFLAKE_CONNECTIONS_PROD_ROLE`)
+#'
+#' @return A list containing parsed environment variables organized by connection name
+#' @keywords internal
+parse_env_vars <- function() {
+  # Get all environment variables
+  env_vars <- Sys.getenv()
+  result <- list()
+
+  # Handle generic SNOWFLAKE_* variables
+  # https://docs.snowflake.com/en/developer-guide/snowflake-cli/connecting/configure-connections#use-environment-variables-for-snowflake-credentials
+  generic_envvars <- c(
+    "SNOWFLAKE_ACCOUNT",
+    "SNOWFLAKE_USER",
+    "SNOWFLAKE_PASSWORD",
+    "SNOWFLAKE_DATABASE",
+    "SNOWFLAKE_SCHEMA",
+    "SNOWFLAKE_ROLE",
+    "SNOWFLAKE_WAREHOUSE",
+    "SNOWFLAKE_AUTHENTICATOR",
+    "SNOWFLAKE_PRIVATE_KEY_PATH",
+    "SNOWFLAKE_PRIVATE_KEY_RAW",
+    "SNOWFLAKE_SESSION_TOKEN",
+    "SNOWFLAKE_MASTER_TOKEN",
+    "SNOWFLAKE_TOKEN_FILE_PATH",
+    "SNOWFLAKE_OAUTH_CLIENT_ID",
+    "SNOWFLAKE_OAUTH_CLIENT_SECRET",
+    "SNOWFLAKE_OAUTH_AUTHORIZATION_URL",
+    "SNOWFLAKE_OAUTH_TOKEN_REQUEST_URL",
+    "SNOWFLAKE_OAUTH_REDIRECT_URI",
+    "SNOWFLAKE_OAUTH_SCOPE",
+    "SNOWFLAKE_OAUTH_DISABLE_PKCE",
+    "SNOWFLAKE_OAUTH_ENABLE_REFRESH_TOKENS",
+    "SNOWFLAKE_OAUTH_ENABLE_SINGLE_USE_REFRESH_TOKENS",
+    "SNOWFLAKE_CLIENT_STORE_TEMPORARY_CREDENTIAL"
+  )
+
+  # Extract non-empty generic variables and convert to lowercase parameter names
+  generic_vars <- env_vars[generic_envvars]
+  generic_vars <- generic_vars[!is.na(generic_vars) & generic_vars != ""]
+
+  if (length(generic_vars) > 0) {
+    names(generic_vars) <- tolower(gsub("^SNOWFLAKE_", "", names(generic_vars)))
+    result$default <- as.list(generic_vars)
+  }
+
+  # Handle SNOWFLAKE_CONNECTIONS_* variables for specific named connections
+  connection_vars <- env_vars[grepl("^SNOWFLAKE_CONNECTIONS_", names(env_vars))]
+
+  for (var_name in names(connection_vars)) {
+    # Remove the SNOWFLAKE_CONNECTIONS_ prefix
+    remaining <- sub("^SNOWFLAKE_CONNECTIONS_", "", var_name)
+
+    # Split by underscores
+    parts <- strsplit(remaining, "_", fixed = TRUE)[[1]]
+
+    if (length(parts) >= 2) {
+      # First part is the connection name (keep case)
+      connection_name <- parts[1]
+
+      # Remaining parts form the parameter name (convert to lowercase and join with underscores)
+      param_name <- tolower(paste(parts[-1], collapse = "_"))
+
+      # Initialize connection list if it doesn't exist
+      if (is.null(result[[connection_name]])) {
+        result[[connection_name]] <- list()
+      }
+
+      # Add the parameter
+      result[[connection_name]][[param_name]] <- connection_vars[[var_name]]
+    }
+  }
+
+  result
 }
