@@ -109,7 +109,13 @@ test_that("Workbench-managed credentials are detected correctly", {
     SNOWFLAKE_ACCOUNT = "testorg-test_account",
     SNOWFLAKE_HOME = config_dir
   )
-  expect_snapshot(snowflake_connection())
+
+  expect_snapshot(
+    snowflake_connection(),
+    transform = function(x) {
+      gsub("'/[^']+/([^/']+)'", "'\\1'", x)
+    }
+  )
 })
 
 test_that("ambient credentials are detected correctly", {

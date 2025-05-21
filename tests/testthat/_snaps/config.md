@@ -129,7 +129,7 @@
     Code
       snowflake_connection()
     Message
-      ! Both '/var/folders/b5/6n6g0lqx79jb20k4vd6fn0yh0000gp/T//RtmpJpWZFg/posit-workbench15edc2debbbad/connections.toml' and '/var/folders/b5/6n6g0lqx79jb20k4vd6fn0yh0000gp/T//RtmpJpWZFg/posit-workbench15edc2debbbad/config.toml' exist. Using '/var/folders/b5/6n6g0lqx79jb20k4vd6fn0yh0000gp/T//RtmpJpWZFg/posit-workbench15edc2debbbad/connections.toml'.
+      ! Both 'connections.toml' and 'config.toml' exist. Using 'connections.toml'.
       <Snowflake connection: workbench>
       account: "testorg-test_account"
       authenticator: "oauth"
