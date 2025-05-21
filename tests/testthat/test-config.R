@@ -1,20 +1,47 @@
-test_that("the default connection name is detected correctly", {
-  config_dir <- tempfile("snowflake")
-  on.exit(file.remove(file.path(config_dir, "config.toml"), config_dir))
-  # No configuration:
-  expect_equal(default_connection_name(config_dir), "default")
-  # Configuration via file:
-  dir.create(config_dir)
+test_that("the configuration precedence hierarchy is resolved correctly", {
+  config_dir <- tempdir()
+
+  cfg <- load_snowflake_config(config_dir = config_dir)
+  expect_null(cfg[["connections"]])
+
+  ## add connections.toml
+  withr::local_file(config_dir, "connections.toml")
+  writeLines(
+    c(
+      '[default]',
+      'account = "testorg-test-account"',
+      'user = "user"',
+      'role = "role"',
+      '[secondary]',
+      'account = "secondary-test-account"',
+      'user = "user"',
+      'role = "role"'
+    ),
+    file.path(config_dir, "connections.toml")
+  )
+  # check that connections info comes from connections.toml
+  cfg <- load_snowflake_config(config_dir = config_dir)
+  expect_equal(cfg[["connection_name"]], "default")
+  expect_equal(
+    cfg[["connections"]][["default"]][["account"]],
+    "testorg-test-account"
+  )
+
+  # via environment variable takes precedence:
+  withr::with_envvar(
+    c(SNOWFLAKE_DEFAULT_CONNECTION_NAME = "secondary"),
+    expect_equal(
+      load_snowflake_config(config_dir = config_dir)[["connection_name"]],
+      "secondary"
+    )
+  )
+
+  withr::local_file(file.path(config_dir, "config.toml"))
   writeLines(
     'default_connection_name = "test1"',
     file.path(config_dir, "config.toml")
   )
-  expect_equal(default_connection_name(config_dir), "test1")
-  # Configuration via environment variable takes precedence:
-  withr::local_envvar(
-    SNOWFLAKE_DEFAULT_CONNECTION_NAME = "test2"
-  )
-  expect_equal(default_connection_name(config_dir), "test2")
+  expect_error(load_snowflake_config(config_dir = config_dir))
 })
 
 # TODO: Test the SNOWFLAKE_HOME logic.
@@ -82,7 +109,13 @@ test_that("Workbench-managed credentials are detected correctly", {
     SNOWFLAKE_ACCOUNT = "testorg-test_account",
     SNOWFLAKE_HOME = config_dir
   )
-  expect_snapshot(snowflake_connection())
+
+  expect_snapshot(
+    snowflake_connection(),
+    transform = function(x) {
+      gsub("'/[^']+/([^/']+)'", "'\\1'", x)
+    }
+  )
 })
 
 test_that("ambient credentials are detected correctly", {

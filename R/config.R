@@ -69,46 +69,36 @@
 #' }
 #' @export
 snowflake_connection <- function(name = NULL, ..., .config_dir = NULL) {
-  params <- list(name = name)
   config_dir <- .config_dir %||% default_config_dir()
-  cfile <- file.path(config_dir, "connections.toml")
 
-  # TODO: How should we distinguish "no ambient Snowflake credentials" here?
+  cfg <- load_snowflake_config(name, config_dir)
+  connections <- cfg$connections
+  # if no configuration file is returned from loading config,
+  # suggest creating connections.toml
+  cfile <- cfg$connection_file %||% file.path(config_dir, "connections.toml")
+  name <- name %||% cfg$connection_name
 
-  if (file.exists(cfile)) {
-    connections <- RcppTOML::parseTOML(cfile, fromFile = TRUE)
-    if (!is.null(name) && is.null(connections[[name]])) {
-      cli::cli_abort(c(
-        "Unknown connection {.str {name}}.",
-        i = "Try defining a {.field [{name}]} section in {.file {cfile}} or
+  # user provided connection name doesn't exist
+  if (!is.null(name) && is.null(connections[[name]])) {
+    cli::cli_abort(c(
+      "Unknown connection {.str {name}}.",
+      i = "Try defining a {.field [{name}]} section in {.file {cfile}} or
              omit the {.arg name} parameter to use the default connection
              instead."
-      ))
-    }
-    name <- name %||% default_connection_name(config_dir)
-    if (is.null(connections[[name]])) {
-      cli::cli_abort(c(
-        "The default connection is missing.",
-        i = "Try defining a {.field [{name}]} section in {.file {cfile}}."
-      ))
-    }
-    params <- c(list(name = name), connections[[name]])
-    if (is_empty(params$account)) {
-      cli::cli_abort(c(
-        "The {.field {name}} connection is missing the required
-        {.field account} field.",
-        i = "Try defining an {.field account} in the {.field [{name}]} section
-            of {.file {cfile}}."
-      ))
-    }
+    ))
   }
 
-  # TODO: Should we check for conflicts in the account parameter, e.g. if
-  # SNOWFLAKE_ACCOUNT differs from the connection's account?
+  # create list of connection parameters from file
+  params <- c(list(name = name), connections[[name]])
 
+  # TODO: Load generic environment variables
+  # https://docs.snowflake.com/en/developer-guide/snowflake-cli/connecting/configure-connections#use-environment-variables-for-snowflake-credentials
+
+  # overwrite connection parameters with user-supplied values
   params <- utils::modifyList(params, list(...))
+  name <- name %||% "default"
+  # user prvovides connection info that doesn't include account
   if (is_empty(params$account)) {
-    name <- name %||% default_connection_name(config_dir)
     cli::cli_abort(c(
       "An {.arg account} parameter is required when {.file {cfile}} is missing
        or empty.",
@@ -185,47 +175,157 @@ print.snowflake_redacted <- function(x, ...) {
   cat(cli::col_grey("<REDACTED>"))
 }
 
+
+#' Load Snowflake configuration
+#'
+#' Internal function that consolidates the loading and parsing of Snowflake
+#' configuration files. This handles both `connections.toml` and `config.toml`
+#' files, resolves the connection name, and returns a structured configuration.
+#'
+#' @param name A named connection to use. If NULL, the default connection will be used
+#'   according to Snowflake client behavior.
+#' @param config_dir The directory containing Snowflake configuration files.
+#'   Defaults to the result of `default_config_dir()`.
+#'
+#' @return A list with the following components:
+#'   \item{connections}{List of available connection configurations}
+#'   \item{connection_name}{The resolved connection name to use}
+#'   \item{connection_file}{Path to the configuration file that was loaded}
+#'
+#' @keywords internal
+load_snowflake_config <- function(
+  name = NULL,
+  config_dir = default_config_dir()
+) {
+  # Initialize return structure
+  result <- list(
+    connections = NULL,
+    connection_name = NULL,
+    connection_file = NULL
+  )
+
+  # Paths to possible configuration files
+  config_toml <- file.path(config_dir, "config.toml")
+  connections_toml <- file.path(config_dir, "connections.toml")
+
+  # Set connection name by priority: explicit name > environment variable > NULL
+  result$connection_name <- name
+  if (is.null(result$connection_name)) {
+    env_connection_name <- Sys.getenv("SNOWFLAKE_DEFAULT_CONNECTION_NAME", "")
+    if (nzchar(env_connection_name)) {
+      result$connection_name <- env_connection_name
+    }
+  }
+
+  # TODO: load environment variable overrides for connection parameters
+  # `SNOWFLAKE_CONNECTIONS_` prefix
+
+  # Load configuration files if they exist
+  has_config_toml <- file.exists(config_toml)
+  has_connections_toml <- file.exists(connections_toml)
+
+  # Load config.toml if it exists
+  if (has_config_toml) {
+    config <- RcppTOML::parseTOML(config_toml, fromFile = TRUE)
+    # If no connection name yet, check for default_connection_name
+    if (
+      is.null(result$connection_name) &&
+        !is.null(config$default_connection_name)
+    ) {
+      result$connection_name <- config$default_connection_name
+    }
+  }
+
+  # Load connections.toml if it exists
+  if (has_connections_toml) {
+    connections <- RcppTOML::parseTOML(connections_toml, fromFile = TRUE)
+    result$connection_file <- connections_toml
+
+    # If both files exist, inform user we're using connections.toml
+    if (has_config_toml) {
+      cli::cli_inform(c(
+        "!" = "Both {.file {connections_toml}} and {.file {config_toml}} exist.
+        Using {.file {connections_toml}}."
+      ))
+
+      # If we have a connection name from config.toml, verify it exists in connections.toml
+      if (
+        !is.null(result$connection_name) &&
+          is.null(connections[[config$default_connection_name]])
+      ) {
+        cli::cli_abort(c(
+          "{.field default_connection_name} is set to {.str {result$connection_name}} in
+          {.file {config_toml}}, but the connection does not exist in
+          {.file {connections_toml}}.",
+          i = "Try defining a {.field [{result$connection_name}]} section in {.file {connections_toml}}."
+        ))
+      } else if (
+        !is.null(result$connection_name) &&
+          is.null(connections[[result$connection_name]])
+      ) {
+        cli::cli_abort(c(
+          "Unknown connection {.str {result$connection_name}} in {.file {connections_toml}}.",
+          i = "Try defining a {.field [{result$connection_name}]} section in {.file {connections_toml}}."
+        ))
+      }
+    }
+    # Set connections in result
+    result$connections <- connections
+    if (
+      !is.null(connections[["default"]]) &&
+        is.null(result$connection_name)
+    ) {
+      result$connection_name <- "default"
+    }
+  } else if (has_config_toml) {
+    # Using config.toml only - get connections section if it exists
+    if (!is.null(config$connections)) {
+      connections <- config$connections
+    }
+    result$connection_file <- config_toml
+  }
+
+  result
+}
+
+#' Get the default Snowflake configuration directory
 # See: https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect#connecting-using-the-connections-toml-file
+#'
+#' @param os Operating system identifier; one of "win", "mac", or "unix".
+#'   If NULL (the default), the value is determined automatically.
+#'
+#' @return Path to the default Snowflake configuration directory
+#' @keywords internal
 default_config_dir <- function(os = NULL) {
+  # Check environment variables first
   home <- Sys.getenv("SNOWFLAKE_HOME", "~/.snowflake")
   if (dir.exists(home)) {
     return(home)
   }
-  if (nzchar(env <- Sys.getenv("XDG_CONFIG_HOME"))) {
-    return(file.path(env, "snowflake"))
+
+  xdg_home <- Sys.getenv("XDG_CONFIG_HOME")
+  if (nzchar(xdg_home)) {
+    return(file.path(xdg_home, "snowflake"))
   }
-  # System-specific paths.
+
+  # Detect OS if not provided
   if (is.null(os)) {
-    if (.Platform$OS.type == "windows") {
-      os <- "win"
-    } else if (Sys.info()["sysname"] == "Darwin") {
-      os <- "mac"
-    } else {
-      os <- "unix"
-    }
+    os <- if (.Platform$OS.type == "windows") "win" else if (
+      Sys.info()["sysname"] == "Darwin"
+    )
+      "mac" else "unix"
   }
-  switch(
-    os,
+
+  # OS-specific paths
+  os_paths <- list(
     win = file.path(Sys.getenv("LOCALAPPDATA"), "snowflake"),
     mac = "~/Library/Application Support/snowflake",
     unix = "~/.config/snowflake"
   )
+
+  os_paths[[os]]
 }
 
-# See: https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect#setting-a-default-connection
-default_connection_name <- function(config_dir = default_config_dir()) {
-  # The environment variable takes precedence.
-  if (nzchar(env <- Sys.getenv("SNOWFLAKE_DEFAULT_CONNECTION_NAME"))) {
-    return(env)
-  }
-  name <- "default"
-  cfg <- file.path(config_dir, "config.toml")
-  if (file.exists(cfg)) {
-    cfg <- RcppTOML::parseTOML(cfg, fromFile = TRUE)
-    name <- cfg$default_connection_name %||% name
-  }
-  name
-}
 
 has_a_default_connection <- function(...) {
   tryCatch(

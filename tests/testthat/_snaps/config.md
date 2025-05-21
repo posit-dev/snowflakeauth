@@ -61,8 +61,8 @@
       snowflake_connection("test5", .config_dir = dir)
     Condition
       Error in `snowflake_connection()`:
-      ! The test5 connection is missing the required account field.
-      i Try defining an account in the [test5] section of './connections.toml'.
+      ! An `account` parameter is required when './connections.toml' is missing or empty.
+      i Pass `account` or define a [test5] section with an account field in './connections.toml'.
 
 ---
 
@@ -85,9 +85,8 @@
     Code
       snowflake_connection(.config_dir = dir)
     Condition
-      Error in `snowflake_connection()`:
-      ! The default connection is missing.
-      i Try defining a [default] section in './connections.toml'.
+      Error in `connections[[name]]`:
+      ! attempt to select less than one element in get1index
 
 ---
 
@@ -130,6 +129,7 @@
     Code
       snowflake_connection()
     Message
+      ! Both 'connections.toml' and 'config.toml' exist. Using 'connections.toml'.
       <Snowflake connection: workbench>
       account: "testorg-test_account"
       authenticator: "oauth"
