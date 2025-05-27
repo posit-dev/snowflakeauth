@@ -13,7 +13,6 @@ test_that("default_config_dir finds config directories correctly", {
 })
 
 test_that("SNOWFLAKE_HOME environment variable is respected", {
-  # Test that the SNOWFLAKE_HOME environment variable is respected.
   withr::with_envvar(
     c(SNOWFLAKE_HOME = test_path(".")),
     expect_equal(
@@ -24,7 +23,6 @@ test_that("SNOWFLAKE_HOME environment variable is respected", {
 })
 
 test_that("generic environment variables are respected", {
-  # Test that the generic environment variables are respected.
   withr::with_envvar(
     c(
       SNOWFLAKE_ACCOUNT = "env_account",

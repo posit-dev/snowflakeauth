@@ -2,7 +2,8 @@ Package: snowflakeauth
 Title: Support for authenticating with the 'Snowflake' platform
 Version: 0.0.0.9000
 Authors@R: c(
-    person("Aaron", "Jacobs", , "aaron.jacobs@posit.co", role = c("aut", "cre")),
+    person("Aaron", "Jacobs", , "aaron.jacobs@posit.co", role = c("aut")),
+    person("E. David", "Aja", , "david@posit.co", role = c("aut", "cre")),
     person("Posit Software, PBC", role = c("cph", "fnd"))
   )
 Description: A toolkit for authenticating with Snowflake.
