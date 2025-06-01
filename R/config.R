@@ -224,11 +224,9 @@ load_config <- function(name = NULL, config_dir = default_config_dir()) {
     }
   }
 
-  # Step 2: Load configuration files
   has_config_toml <- file.exists(config_toml)
   has_connections_toml <- file.exists(connections_toml)
 
-  # Load config.toml
   if (has_config_toml) {
     config <- RcppTOML::parseTOML(config_toml, fromFile = TRUE)
 
@@ -238,6 +236,13 @@ load_config <- function(name = NULL, config_dir = default_config_dir()) {
         !is.null(config$default_connection_name)
     ) {
       result$connection_name <- config$default_connection_name
+    }
+
+    if (
+      is.null(result$connection_name) &&
+        "default" %in% names(config$connections)
+    ) {
+      result$connection_name <- "default"
     }
 
     # Extract connections section if it exists

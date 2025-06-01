@@ -1,14 +1,13 @@
 test_that("default_config_dir finds config directories correctly", {
-  withr::local_envvar(
+  withr::with_envvar(
     c(
       SNOWFLAKE_HOME = NA,
       XDG_CONFIG_HOME = test_path(".")
+    ),
+    expect_equal(
+      default_config_dir(),
+      file.path(test_path("."), "snowflake")
     )
-  )
-
-  expect_equal(
-    default_config_dir(),
-    file.path(test_path("."), "snowflake")
   )
 })
 
@@ -213,6 +212,38 @@ test_that("connections can be created without a connections.toml file", {
     authenticator = "externalbrowser",
     .config_dir = "/test"
   ))
+})
+
+test_that("a default connection in config.toml is respected", {
+  config_dir <- tempdir()
+  withr::local_file(file.path(config_dir, "config.toml"))
+  writeLines(
+    c(
+      '[connections.secondary]',
+      'account = "secondary-test-account"',
+      'user = "user"',
+      'role = "role"',
+      '[connections.default]',
+      'account = "testorg-default"',
+      'user = "default_user"',
+      'role = "default_role"',
+      'authenticator = "externalbrowser"'
+    ),
+    file.path(config_dir, "config.toml")
+  )
+
+  expect_equal(
+    snowflake_connection(.config_dir = config_dir)[["account"]],
+    "testorg-default"
+  )
+
+  withr::with_envvar(
+    c(SNOWFLAKE_DEFAULT_CONNECTION_NAME = "secondary"),
+    expect_equal(
+      snowflake_connection(.config_dir = config_dir)[["account"]],
+      "secondary-test-account"
+    )
+  )
 })
 
 test_that("Workbench-managed credentials are detected correctly", {
