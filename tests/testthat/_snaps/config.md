@@ -15,7 +15,7 @@
       snowflake_connection("test2", .config_dir = dir)
     Message
       <Snowflake connection: test2>
-      account: "testorg-test_account"
+      account: "testorg-test_account2"
       private_key_file: "file"
       private_key_file_pwd: <REDACTED>
       user: "user"
@@ -61,8 +61,8 @@
       snowflake_connection("test5", .config_dir = dir)
     Condition
       Error in `snowflake_connection()`:
-      ! The test5 connection is missing the required account field.
-      i Try defining an account in the [test5] section of './connections.toml'.
+      ! An `account` parameter is required when './connections.toml' is missing or empty.
+      i Pass `account` or define a [test5] section with an account field in './connections.toml'.
 
 ---
 
@@ -86,8 +86,8 @@
       snowflake_connection(.config_dir = dir)
     Condition
       Error in `snowflake_connection()`:
-      ! The default connection is missing.
-      i Try defining a [default] section in './connections.toml'.
+      ! An `account` parameter is required when './connections.toml' is missing or empty.
+      i Pass `account` or define a [] section with an account field in './connections.toml'.
 
 ---
 
@@ -104,6 +104,18 @@
       schema: "schema"
       warehouse: "warehouse"
 
+# connections.toml wins if present with config.toml
+
+    Code
+      snowflake_connection(.config_dir = config_dir)
+    Message
+      ! Both 'connections.toml' and 'config.toml' exist. Using 'connections.toml'.
+      <Snowflake connection: secondary>
+      account: "secondary-test-account"
+      role: "role"
+      user: "user"
+      authenticator: "snowflake"
+
 # connections can be created without a connections.toml file
 
     Code
@@ -111,7 +123,7 @@
     Condition
       Error in `snowflake_connection()`:
       ! An `account` parameter is required when '/test/connections.toml' is missing or empty.
-      i Pass `account` or define a [default] section with an account field in '/test/connections.toml'.
+      i Pass `account` or define a [] section with an account field in '/test/connections.toml'.
 
 ---
 
@@ -130,6 +142,7 @@
     Code
       snowflake_connection()
     Message
+      ! Both 'connections.toml' and 'config.toml' exist. Using 'connections.toml'.
       <Snowflake connection: workbench>
       account: "testorg-test_account"
       authenticator: "oauth"

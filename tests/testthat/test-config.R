@@ -1,23 +1,103 @@
-test_that("the default connection name is detected correctly", {
-  config_dir <- tempfile("snowflake")
-  on.exit(file.remove(file.path(config_dir, "config.toml"), config_dir))
-  # No configuration:
-  expect_equal(default_connection_name(config_dir), "default")
-  # Configuration via file:
-  dir.create(config_dir)
-  writeLines(
-    'default_connection_name = "test1"',
-    file.path(config_dir, "config.toml")
+test_that("default_config_dir finds config directories correctly", {
+  withr::with_envvar(
+    c(
+      SNOWFLAKE_HOME = NA,
+      XDG_CONFIG_HOME = test_path(".")
+    ),
+    expect_equal(
+      default_config_dir(),
+      file.path(test_path("."), "snowflake")
+    )
   )
-  expect_equal(default_connection_name(config_dir), "test1")
-  # Configuration via environment variable takes precedence:
-  withr::local_envvar(
-    SNOWFLAKE_DEFAULT_CONNECTION_NAME = "test2"
-  )
-  expect_equal(default_connection_name(config_dir), "test2")
 })
 
-# TODO: Test the SNOWFLAKE_HOME logic.
+test_that("SNOWFLAKE_HOME environment variable is respected", {
+  withr::with_envvar(
+    c(SNOWFLAKE_HOME = test_path(".")),
+    expect_equal(
+      snowflake_connection("test1")[["authenticator"]],
+      "oauth"
+    )
+  )
+})
+
+test_that("generic environment variables are respected", {
+  withr::with_envvar(
+    c(
+      SNOWFLAKE_ACCOUNT = "env_account",
+      SNOWFLAKE_USER = "env_user",
+      SNOWFLAKE_PASSWORD = "env_password",
+      SNOWFLAKE_AUTHENTICATOR = "env_authenticator"
+    ),
+    expect_equal(
+      snowflake_connection(.config_dir = tempdir())[["account"]],
+      "env_account"
+    )
+  )
+})
+
+test_that("user-provided connection params win over config.toml file params", {
+  config_dir <- tempdir()
+  withr::local_file(file.path(config_dir, "config.toml"))
+  writeLines(
+    c(
+      'default_connection_name = "test1"',
+      '[connections.test1]',
+      'account = "testorg-test_account"',
+      'user = "user"',
+      'password = "password"',
+      'role = "role"',
+      'authenticator = "externalbrowser"'
+    ),
+    file.path(config_dir, "config.toml")
+  )
+
+  conn <- snowflake_connection(
+    account = "override_account",
+    user = "override_user",
+    role = "override_role",
+    authenticator = "override_authenticator",
+    .config_dir = config_dir
+  )
+  expect_equal(conn[["account"]], "override_account")
+  expect_equal(conn[["user"]], "override_user")
+  expect_equal(conn[["role"]], "override_role")
+})
+
+test_that("user-provided connection params win over generic environment variables", {
+  withr::local_envvar(
+    c(
+      SNOWFLAKE_ACCOUNT = "env_account",
+      SNOWFLAKE_USER = "env_user"
+    )
+  )
+
+  conn <- snowflake_connection(user = "override_user", .config_dir = tempdir())
+  expect_equal(conn[["account"]], "env_account")
+  expect_equal(conn[["user"]], "override_user")
+})
+
+test_that("SNOWFLAKE_CONNECTIONS_* win over config.toml params", {
+  config_dir <- tempdir()
+  withr::local_file(file.path(config_dir, "config.toml"))
+  writeLines(
+    c(
+      'default_connection_name = "test1"',
+      '[connections.test1]',
+      'account = "testorg-test_account"',
+      'role = "role"'
+    ),
+    file.path(config_dir, "config.toml")
+  )
+
+  withr::local_envvar(
+    c(SNOWFLAKE_CONNECTIONS_test1_ROLE = "env_role")
+  )
+  conn <- snowflake_connection(.config_dir = config_dir)
+  expect_equal(conn[["role"]], "env_role")
+  expect_equal(conn[["account"]], "testorg-test_account")
+})
+
 
 test_that("the connections.toml file is parsed correctly", {
   dir <- test_path(".")
@@ -50,6 +130,79 @@ test_that("the connections.toml file is parsed correctly", {
   ))
 })
 
+test_that("connections.toml wins if present with config.toml", {
+  config_dir <- tempdir()
+
+  withr::local_file(config_dir, "connections.toml")
+  writeLines(
+    c(
+      '[default]',
+      'account = "testorg-test-account"',
+      'user = "user"',
+      'role = "role"',
+      '[secondary]',
+      'account = "secondary-test-account"',
+      'user = "user"',
+      'role = "role"'
+    ),
+    file.path(config_dir, "connections.toml")
+  )
+
+  withr::local_file(file.path(config_dir, "config.toml"))
+  writeLines(
+    'default_connection_name = "secondary"',
+    file.path(config_dir, "config.toml")
+  )
+  expect_equal(
+    snowflake_connection(.config_dir = config_dir)[["account"]],
+    "secondary-test-account"
+  )
+  expect_snapshot(
+    snowflake_connection(.config_dir = config_dir),
+    transform = function(x) {
+      gsub("'/[^']+/([^/']+)'", "'\\1'", x)
+    }
+  )
+})
+
+test_that("conflicting config.toml and connections.toml produce an error", {
+  config_dir <- tempdir()
+
+  withr::local_file(config_dir, "connections.toml")
+  writeLines(
+    c(
+      '[default]',
+      'account = "testorg-test-account"',
+      'user = "user"',
+      'role = "role"',
+      '[secondary]',
+      'account = "secondary-test-account"',
+      'user = "user"',
+      'role = "role"'
+    ),
+    file.path(config_dir, "connections.toml")
+  )
+
+  withr::local_file(file.path(config_dir, "config.toml"))
+  writeLines(
+    'default_connection_name = "test1"',
+    file.path(config_dir, "config.toml")
+  )
+  expect_error(snowflake_connection(.config_dir = config_dir))
+})
+
+test_that("SNOWFLAKE_DEFAULT_CONNECTION_NAME wins if set", {
+  # Test that the SNOWFLAKE_DEFAULT_CONNECTION_NAME environment variable is respected.
+  withr::with_envvar(
+    c(SNOWFLAKE_DEFAULT_CONNECTION_NAME = "test2"),
+    expect_equal(
+      snowflake_connection(.config_dir = test_path("."))[["account"]],
+      "testorg-test_account2"
+    )
+  )
+})
+
+
 test_that("connections can be created without a connections.toml file", {
   expect_snapshot(snowflake_connection(.config_dir = "/test"), error = TRUE)
   expect_snapshot(snowflake_connection(
@@ -59,6 +212,38 @@ test_that("connections can be created without a connections.toml file", {
     authenticator = "externalbrowser",
     .config_dir = "/test"
   ))
+})
+
+test_that("a default connection in config.toml is respected", {
+  config_dir <- tempdir()
+  withr::local_file(file.path(config_dir, "config.toml"))
+  writeLines(
+    c(
+      '[connections.secondary]',
+      'account = "secondary-test-account"',
+      'user = "user"',
+      'role = "role"',
+      '[connections.default]',
+      'account = "testorg-default"',
+      'user = "default_user"',
+      'role = "default_role"',
+      'authenticator = "externalbrowser"'
+    ),
+    file.path(config_dir, "config.toml")
+  )
+
+  expect_equal(
+    snowflake_connection(.config_dir = config_dir)[["account"]],
+    "testorg-default"
+  )
+
+  withr::with_envvar(
+    c(SNOWFLAKE_DEFAULT_CONNECTION_NAME = "secondary"),
+    expect_equal(
+      snowflake_connection(.config_dir = config_dir)[["account"]],
+      "secondary-test-account"
+    )
+  )
 })
 
 test_that("Workbench-managed credentials are detected correctly", {
@@ -82,7 +267,13 @@ test_that("Workbench-managed credentials are detected correctly", {
     SNOWFLAKE_ACCOUNT = "testorg-test_account",
     SNOWFLAKE_HOME = config_dir
   )
-  expect_snapshot(snowflake_connection())
+
+  expect_snapshot(
+    snowflake_connection(),
+    transform = function(x) {
+      gsub("'/[^']+/([^/']+)'", "'\\1'", x)
+    }
+  )
 })
 
 test_that("ambient credentials are detected correctly", {
