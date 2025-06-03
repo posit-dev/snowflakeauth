@@ -18,6 +18,11 @@ keypair_credentials <- function(
       `X-Snowflake-Authorization-Token-Type` = "KEYPAIR_JWT"
     ))
   }
+
+  # strip scheme from SPCS endpoint if provided
+  if (grepl("^https?://", spcs_endpoint)) {
+    spcs_endpoint <- sub("^https?://", "", spcs_endpoint)
+  }
   account_url <- sprintf("https://%s.snowflakecomputing.com", account)
   token <- exchange_jwt_for_token(account_url, jwt, spcs_endpoint, role)
   # Yes, this is actually the format of the Authorization header that SPCS
