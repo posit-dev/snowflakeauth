@@ -52,12 +52,12 @@ test_that("exchange_jwt_for_token handles errors correctly", {
     .package = "curl"
   )
 
-  expect_error(
+  expect_snapshot(
     exchange_jwt_for_token(
       "https://testaccount.snowflakecomputing.com",
       "test_jwt",
       "test.endpoint.com"
     ),
-    "HTTP error 401"
+    error = TRUE
   )
 })

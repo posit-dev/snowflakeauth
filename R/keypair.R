@@ -110,8 +110,11 @@ exchange_jwt_for_token <- function(
   resp <- curl::curl_fetch_memory(url, handle)
 
   if (resp$status_code >= 400) {
-    cat("Error response:", rawToChar(resp$content), "\n")
-    stop("HTTP error ", resp$status_code, call. = FALSE)
+    cli::cli_abort(c(
+      "Could not exchange JWT",
+      "Status code: {.strong {resp$status_code}}",
+      "Response: {rawToChar(resp$content)}"
+    ))
   }
 
   token <- rawToChar(resp$content)
