@@ -18,6 +18,11 @@ keypair_credentials <- function(
       `X-Snowflake-Authorization-Token-Type` = "KEYPAIR_JWT"
     ))
   }
+
+  # strip scheme from SPCS endpoint if provided
+  if (grepl("^https?://", spcs_endpoint)) {
+    spcs_endpoint <- sub("^https?://", "", spcs_endpoint)
+  }
   account_url <- sprintf("https://%s.snowflakecomputing.com", account)
   token <- exchange_jwt_for_token(account_url, jwt, spcs_endpoint, role)
   # Yes, this is actually the format of the Authorization header that SPCS
@@ -74,22 +79,44 @@ exchange_jwt_for_token <- function(
   spcs_endpoint,
   role = "PUBLIC"
 ) {
-  check_installed("httr2", "for token exchange")
   scope <- sprintf("session:role:%s %s", role, spcs_endpoint)
-  req <- httr2::request(account_url)
-  req <- httr2::req_url_path_append(req, "/oauth/token")
-  req <- httr2::req_body_form(
-    req,
+  url <- sprintf("%s/oauth/token", account_url)
+
+  form_data <- list(
     grant_type = "urn:ietf:params:oauth:grant-type:jwt-bearer",
     scope = scope,
     assertion = jwt
   )
-  # req <- httr2::req_headers(req, Accept = "application/json")
-  req <- httr2::req_error(req)
-  resp <- httr2::req_perform(req)
-  # The body of the response is itself the token. This violates the OAuth spec
-  # of course, but we're pretty off into the wilderness already at this point
-  # anyway.
-  token <- httr2::resp_body_string(resp)
-  httr2::oauth_token(token, expires_in = 300L)
+
+  form_string <- paste(
+    mapply(
+      function(name, value) {
+        paste0(curl::curl_escape(name), "=", curl::curl_escape(value))
+      },
+      names(form_data),
+      form_data
+    ),
+    collapse = "&"
+  )
+
+  handle <- curl::new_handle()
+  curl::handle_setopt(handle, postfields = form_string)
+  curl::handle_setheaders(
+    handle,
+    `Content-Type` = "application/x-www-form-urlencoded",
+    `Accept` = "application/json"
+  )
+
+  resp <- curl::curl_fetch_memory(url, handle)
+
+  if (resp$status_code >= 400) {
+    cli::cli_abort(c(
+      "Could not exchange JWT",
+      "Status code: {.strong {resp$status_code}}",
+      "Response: {rawToChar(resp$content)}"
+    ))
+  }
+
+  token <- rawToChar(resp$content)
+  list(access_token = token, expires_in = 300L)
 }

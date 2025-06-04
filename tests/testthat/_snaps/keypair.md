@@ -66,3 +66,14 @@
       
       
 
+# exchange_jwt_for_token handles errors correctly
+
+    Code
+      exchange_jwt_for_token("https://testaccount.snowflakecomputing.com", "test_jwt",
+        "test.endpoint.com")
+    Condition
+      Error in `exchange_jwt_for_token()`:
+      ! Could not exchange JWT
+      Status code: 401
+      Response: Unauthorized
+

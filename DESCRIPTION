@@ -14,9 +14,9 @@ Encoding: UTF-8
 Imports:
     cli,
     RcppTOML,
-    rlang
+    rlang,
+    curl
 Suggests:
-    httr2,
     jose,
     openssl,
     testthat (>= 3.0.0),
