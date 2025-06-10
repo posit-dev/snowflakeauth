@@ -103,12 +103,12 @@ test_that("exchange_oauth_token handles missing token in response", {
     .package = "curl"
   )
 
-  expect_error(
+  expect_snapshot(
     exchange_oauth_token(
       "https://testaccount.snowflakecomputing.com",
       "test_token",
       "test.endpoint.com"
     ),
-    "OAuth token exchange failed"
+    error = TRUE
   )
 })
