@@ -67,11 +67,6 @@ generate_jwt <- function(account, user, private_key, iat = NULL, jti = NULL) {
 
 # Exchange a JWT for a Snowflake OAuth access token.
 #
-# Note: we can't use httr2::oauth_flow_bearer_jwt() because Snowflake does not
-# adhere closely enough to RFC 7523. In particular, the response format is not
-# JSON, and the JWT uses a malformed issuer claim that jose::jwt_claim() can't
-# handle.
-#
 # See: https://docs.snowflake.com/en/user-guide/oauth-custom#label-oauth-token-exchange
 exchange_jwt_for_token <- function(
   account_url,
@@ -79,7 +74,14 @@ exchange_jwt_for_token <- function(
   spcs_endpoint,
   role = "PUBLIC"
 ) {
-  scope <- sprintf("session:role:%s %s", role, spcs_endpoint)
+  # https://docs.snowflake.com/en/user-guide/oauth-custom#id3
+  # user's default role will be applied if role is not set
+  scope <- ifelse(
+    is.null(role),
+    spcs_endpoint,
+    sprintf("session:role:%s %s", role, spcs_endpoint)
+  )
+
   url <- sprintf("%s/oauth/token", account_url)
 
   form_data <- list(
