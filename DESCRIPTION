@@ -13,9 +13,10 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Imports:
     cli,
+    curl,
+    jsonlite,
     RcppTOML,
-    rlang,
-    curl
+    rlang
 Suggests:
     jose,
     openssl,

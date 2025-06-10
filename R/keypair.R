@@ -84,25 +84,14 @@ exchange_jwt_for_token <- function(
 
   url <- sprintf("%s/oauth/token", account_url)
 
-  form_data <- list(
+  payload <- list(
     grant_type = "urn:ietf:params:oauth:grant-type:jwt-bearer",
     scope = scope,
     assertion = jwt
   )
 
-  form_string <- paste(
-    mapply(
-      function(name, value) {
-        paste0(curl::curl_escape(name), "=", curl::curl_escape(value))
-      },
-      names(form_data),
-      form_data
-    ),
-    collapse = "&"
-  )
-
   handle <- curl::new_handle()
-  curl::handle_setopt(handle, postfields = form_string)
+  curl::handle_setopt(handle, postfields = formEncode(payload))
   curl::handle_setheaders(
     handle,
     `Content-Type` = "application/x-www-form-urlencoded",

@@ -15,7 +15,12 @@ snowflake_credentials <- function(
   role <- role %||% params$role
   switch(
     params$authenticator,
-    oauth = oauth_credentials(params$token, params$token_file_path),
+    oauth = oauth_credentials(
+      params$account,
+      params$token,
+      params$token_file_path,
+      spcs_endpoint
+    ),
     SNOWFLAKE_JWT = keypair_credentials(
       params$account,
       params$user,
@@ -30,20 +35,11 @@ snowflake_credentials <- function(
   )
 }
 
-oauth_credentials <- function(token = NULL, token_file = NULL) {
-  if (!is.null(token_file)) {
-    tryCatch(
-      token <- readLines(token_file, warn = FALSE, encoding = "UTF-8"),
-      error = function(e) {
-        cli::cli_abort(
-          "Failed to read OAuth token from {.file {token_file}}.",
-          parent = e
-        )
-      }
-    )
-  }
-  list(
-    Authorization = paste("Bearer", token),
-    `X-Snowflake-Authorization-Token-Type` = "OAUTH"
+formEncode <- function(form_data) {
+  paste0(
+    curl::curl_escape(names(form_data)),
+    "=",
+    curl::curl_escape(form_data),
+    collapse = "&"
   )
 }
