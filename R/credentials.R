@@ -36,14 +36,10 @@ snowflake_credentials <- function(
 }
 
 formEncode <- function(form_data) {
-  paste(
-    mapply(
-      function(name, value) {
-        paste0(curl::curl_escape(name), "=", curl::curl_escape(value))
-      },
-      names(form_data),
-      form_data
-    ),
+  paste0(
+    curl::curl_escape(names(form_data)),
+    "=",
+    curl::curl_escape(form_data),
     collapse = "&"
   )
 }

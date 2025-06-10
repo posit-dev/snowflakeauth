@@ -68,7 +68,9 @@ exchange_oauth_token <- function(account_url, token, spcs_endpoint) {
     simplifyVector = FALSE
   )
   if (is.null(respContent[["data"]][["token"]])) {
-    cli::cli_abort("OAuth token exchange failed")
+    cli::cli_abort(
+      "Unexpected response from server: {rawToChar(resp$content)}"
+    )
   }
   list(token = respContent[["data"]][["token"]])
 }
