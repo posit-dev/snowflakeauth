@@ -25,4 +25,5 @@ Suggests:
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Config/testthat/edition: 3
-URL: https://posit-dev.github.io/snowflakeauth/
+URL: https://posit-dev.github.io/snowflakeauth/, https://github.com/posit-dev/snowflakeauth
+BugReports: https://github.com/posit-dev/snowflakeauth/issues
