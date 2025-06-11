@@ -4,9 +4,9 @@
 \name{snowflakeauth-package}
 \alias{snowflakeauth}
 \alias{snowflakeauth-package}
-\title{snowflakeauth: Support for authenticating with the 'Snowflake' platform}
+\title{snowflakeauth: Authentication Helpers for 'Snowflake'}
 \description{
-A toolkit for authenticating with Snowflake. It aims for compatibility with the `connections.toml` and `config.toml` files used by the Python Connector for Snowflake and the Snowflake CLI.
+A toolkit for authenticating with 'Snowflake'. It provides compatibility with authentication apporaches supported by the 'Snowflake Connector for Python' and the 'Snowflake CLI'.
 }
 \seealso{
 Useful links:

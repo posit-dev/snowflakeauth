@@ -21,3 +21,19 @@ A list of HTTP headers.
 \description{
 Get credentials for a Snowflake connection
 }
+\examples{
+\dontshow{if (snowflakeauth:::has_a_default_connection()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Obtain authentication headers for accessing Snowflake APIs
+snowflake_credentials(
+ snowflake_connection()
+)
+\dontshow{\}) # examplesIf}
+\dontshow{if (snowflakeauth:::has_a_default_connection()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# If the application is in Snowpark Container Services,
+# a different collection of headers are returned:
+snowflake_credentials(
+ snowflake_connection(),
+ spcs_endpoint = "https://example-accountname.snowflakecomputing.app"
+)
+\dontshow{\}) # examplesIf}
+}
