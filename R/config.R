@@ -42,8 +42,7 @@
 #'   for details.
 #'
 #' @returns An object of class `"snowflake_connection"`.
-#' @examples
-#' \dontrun{
+#' @examplesIf snowflakeauth:::has_a_default_connection()
 #' # Read the default connection parameters from an existing
 #' # connections.toml file:
 #' conn <- snowflake_connection()
@@ -56,9 +55,7 @@
 #'   schema = "myschema",
 #'   warehouse = "mywarehouse"
 #' )
-#' }
 #' @examples
-#' \dontrun{
 #' # Pass connection parameters manually, which is useful if there is no
 #' # connections.toml file. For example, to use key-pair authentication:
 #' conn <- snowflake_connection(
@@ -66,7 +63,6 @@
 #'   user = "me",
 #'   private_key = "rsa_key.p8"
 #' )
-#' }
 #' @export
 snowflake_connection <- function(name = NULL, ..., .config_dir = NULL) {
   # Load configuration
@@ -357,10 +353,13 @@ default_config_dir <- function(os = NULL) {
 
   # Detect OS if not provided
   if (is.null(os)) {
-    os <- if (.Platform$OS.type == "windows") "win" else if (
-      Sys.info()["sysname"] == "Darwin"
-    )
-      "mac" else "unix"
+    os <- if (.Platform$OS.type == "windows") {
+      "win"
+    } else if (Sys.info()["sysname"] == "Darwin") {
+      "mac"
+    } else {
+      "unix"
+    }
   }
 
   # OS-specific paths
