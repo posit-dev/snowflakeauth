@@ -56,8 +56,11 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of <code>snowflakeauth</code> from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<p>You can install <code>snowflakeauth</code> from CRAN with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"snowflakeauth"</span><span class="op">)</span></span></code></pre></div>
+<p>Or, install the development version of <code>snowflakeauth</code> from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"posit-dev/snowflakeauth"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -65,14 +68,14 @@
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <p><code>snowflakeauth</code> can pick up on the default Snowflake connection parameters from the <code>connections.toml</code> and <code>config.toml</code> files used by the Python Connector for Snowflake and the Snowflake CLI (or any other named connection, for that matter):</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://posit-dev.github.io/snowflakeauth/">snowflakeauth</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/snowflake_connection.html">snowflake_connection</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/snowflake_connection.html">snowflake_connection</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"testing"</span><span class="op">)</span></span></code></pre></div>
 <p>or you can define the parameters of a connection manually:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/snowflake_connection.html">snowflake_connection</a></span><span class="op">(</span></span>
 <span>  account <span class="op">=</span> <span class="st">"myaccount"</span>,</span>
 <span>  user <span class="op">=</span> <span class="st">"me"</span>,</span>
@@ -86,7 +89,7 @@
 <span>  authenticator <span class="op">=</span> <span class="st">"externalbrowser"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>These parameters can then be used to retrieve credentials, which take the form of a one or more of HTTP headers:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/snowflake_connection.html">snowflake_connection</a></span><span class="op">(</span></span>
 <span>  account <span class="op">=</span> <span class="st">"myaccount"</span>,</span>
 <span>  user <span class="op">=</span> <span class="st">"me"</span>,</span>
