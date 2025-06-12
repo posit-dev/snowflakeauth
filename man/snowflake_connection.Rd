@@ -26,13 +26,13 @@ An object of class \code{"snowflake_connection"}.
 }
 \description{
 Reads Snowflake connection parameters from the \code{connections.toml} and
-\code{config.toml} files used by the \href{https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect}{Python Connector for Snowflake}
+\code{config.toml} files used by the \href{https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect}{Snowflake Connector for Python}
 and the \href{https://docs.snowflake.com/en/developer-guide/snowflake-cli/connecting/configure-connections}{Snowflake CLI},
 or specifies them for a connection manually.
 }
 \section{Common parameters}{
 The following is a list of common connection parameters. A more complete list
-can be found in \href{https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-api#label-snowflake-connector-methods-connect}{Snowflake's documentation for the Python Connector}:
+can be found in the \href{https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-api#label-snowflake-connector-methods-connect}{documentation for the Snowflake Connector for Python}:
 \itemize{
 \item \code{account}: A Snowflake account identifier.
 \item \code{user}: A Snowflake username.

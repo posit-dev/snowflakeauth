@@ -11,16 +11,15 @@
 
 `snowflakeauth` is a toolkit for authenticating with Snowflake. It aims
 for compatibility with the `connections.toml` and `config.toml` files
-used by the [Python Connector for
-Snowflake](https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect)
+used by the [Snowflake Connector for
+Python](https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect)
 and the [Snowflake
 CLI](https://docs.snowflake.com/en/developer-guide/snowflake-cli/connecting/configure-connections),
 so that R users can use a consistent approach to Snowflake credentials
 across both languages.
 
-`snowflakeauth` is not intended for direct use by regular R users.
-Instead, it provides low-level utilities for R package authors targeting
-the Snowflake platform.
+`snowflakeauth` is intended for use by R package authors targeting the
+Snowflake platform.
 
 ## Installation
 

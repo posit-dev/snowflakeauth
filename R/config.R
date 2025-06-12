@@ -1,8 +1,8 @@
 #' Snowflake connection parameter configuration
 #'
 #' Reads Snowflake connection parameters from the `connections.toml` and
-#' `config.toml` files used by the [Python Connector for
-#' Snowflake](https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect)
+#' `config.toml` files used by the [Snowflake Connector for
+#' Python](https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect)
 #' and the [Snowflake
 #' CLI](https://docs.snowflake.com/en/developer-guide/snowflake-cli/connecting/configure-connections),
 #' or specifies them for a connection manually.
@@ -10,8 +10,8 @@
 #' # Common parameters
 #'
 #' The following is a list of common connection parameters. A more complete list
-#' can be found in [Snowflake's documentation for the Python
-#' Connector](https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-api#label-snowflake-connector-methods-connect):
+#' can be found in the [documentation for the
+#' Snowflake Connector for Python](https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-api#label-snowflake-connector-methods-connect):
 #'
 #' - `account`: A Snowflake account identifier.
 #' - `user`: A Snowflake username.
