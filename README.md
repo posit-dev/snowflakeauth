@@ -24,7 +24,13 @@ the Snowflake platform.
 
 ## Installation
 
-You can install the development version of `snowflakeauth` from
+You can install `snowflakeauth` from CRAN with:
+
+``` r
+install.packages("snowflakeauth")
+```
+
+Or, install the development version of `snowflakeauth` from
 [GitHub](https://github.com/) with:
 
 ``` r

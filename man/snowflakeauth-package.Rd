@@ -6,12 +6,14 @@
 \alias{snowflakeauth-package}
 \title{snowflakeauth: Authentication Helpers for 'Snowflake'}
 \description{
-A toolkit for authenticating with 'Snowflake'. It provides compatibility with authentication apporaches supported by the 'Snowflake Connector for Python' and the 'Snowflake CLI'.
+A toolkit for authenticating with 'Snowflake'. It provides compatibility with authentication approaches supported by the 'Snowflake Connector for Python' and the 'Snowflake CLI'.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://posit-dev.github.io/snowflakeauth/}
+  \item \url{https://github.com/posit-dev/snowflakeauth}
+  \item Report bugs at \url{https://github.com/posit-dev/snowflakeauth/issues}
 }
 
 }

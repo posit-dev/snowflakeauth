@@ -191,6 +191,7 @@ print.snowflake_redacted <- function(x, ...) {
 #'   \item{connection_file}{Path to the configuration file that was loaded}
 #'
 #' @keywords internal
+#' @noRd
 load_config <- function(name = NULL, config_dir = default_config_dir()) {
   # Initialize result structure
   result <- list(
@@ -334,6 +335,7 @@ load_config <- function(name = NULL, config_dir = default_config_dir()) {
 #'
 #' @return Path to the default Snowflake configuration directory
 #' @keywords internal
+#' @noRd
 default_config_dir <- function(os = NULL) {
   # Check environment variables first
   snowflake_home_env <- Sys.getenv("SNOWFLAKE_HOME")
@@ -396,6 +398,7 @@ has_a_default_connection <- function(...) {
 #'
 #' @return A list containing parsed environment variables organized by connection name
 #' @keywords internal
+#' @noRd
 parse_env_vars <- function() {
   # Get all environment variables
   env_vars <- Sys.getenv()
