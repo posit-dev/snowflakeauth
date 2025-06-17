@@ -6,7 +6,7 @@
 \alias{snowflakeauth-package}
 \title{snowflakeauth: Authentication Helpers for 'Snowflake'}
 \description{
-A toolkit for authenticating with 'Snowflake'. It provides compatibility with authentication approaches supported by the 'Snowflake Connector for Python' and the 'Snowflake CLI'.
+Authentication helpers for 'Snowflake'. It provides compatibility with authentication approaches supported by the 'Snowflake Connector for Python' \url{https://pypi.org/project/snowflake-connector-python} and the 'Snowflake CLI' \url{https://pypi.org/project/snowflake-cli}.
 }
 \seealso{
 Useful links:

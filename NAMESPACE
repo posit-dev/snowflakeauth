@@ -2,6 +2,7 @@
 
 S3method(print,snowflake_connection)
 S3method(print,snowflake_redacted)
+export(has_a_default_connection)
 export(snowflake_connection)
 export(snowflake_credentials)
 importFrom(rlang,"%||%")

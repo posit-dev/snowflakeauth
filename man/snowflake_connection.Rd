@@ -51,7 +51,7 @@ for key-pair authentication.
 }
 
 \examples{
-\dontshow{if (snowflakeauth:::has_a_default_connection()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (has_a_default_connection()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # Read the default connection parameters from an existing
 # connections.toml file:
 conn <- snowflake_connection()

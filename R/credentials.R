@@ -6,12 +6,12 @@
 #'
 #' @returns A list of HTTP headers.
 #' @export
-#' @examplesIf snowflakeauth:::has_a_default_connection()
+#' @examplesIf has_a_default_connection()
 #' # Obtain authentication headers for accessing Snowflake APIs
 #' snowflake_credentials(
 #'  snowflake_connection()
 #' )
-#' @examplesIf snowflakeauth:::has_a_default_connection()
+#' @examplesIf has_a_default_connection()
 #' # If the application is in Snowpark Container Services,
 #' # a different collection of headers are returned:
 #' snowflake_credentials(

@@ -42,7 +42,7 @@
 #'   for details.
 #'
 #' @returns An object of class `"snowflake_connection"`.
-#' @examplesIf snowflakeauth:::has_a_default_connection()
+#' @examplesIf has_a_default_connection()
 #' # Read the default connection parameters from an existing
 #' # connections.toml file:
 #' conn <- snowflake_connection()
@@ -374,7 +374,14 @@ default_config_dir <- function(os = NULL) {
   os_paths[[os]]
 }
 
-
+#' Reports whether a default connection is available
+#'
+#' @param ... arguments passed to [snowflake_connection()]
+#'
+#' @export
+#'
+#' @examples
+#' has_a_default_connection()
 has_a_default_connection <- function(...) {
   tryCatch(
     {
