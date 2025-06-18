@@ -9,6 +9,9 @@ has_a_default_connection(...)
 \arguments{
 \item{...}{arguments passed to \code{\link[=snowflake_connection]{snowflake_connection()}}}
 }
+\value{
+Logical value indicating whether a default connection is available.
+}
 \description{
 Reports whether a default connection is available
 }

@@ -377,7 +377,7 @@ default_config_dir <- function(os = NULL) {
 #' Reports whether a default connection is available
 #'
 #' @param ... arguments passed to [snowflake_connection()]
-#'
+#' @return Logical value indicating whether a default connection is available.
 #' @export
 #'
 #' @examples
