@@ -2,9 +2,7 @@
 
 This is a resubmission. In this version I have:
 
-* Removed "a toolkit for" from the description.
-* Added links to webservices mentioned in the DESCRIPTION file.
-* Exported has_a_default_connection()
+* Added documentation for the return value of `has_a_default_connection()`.
 
 ## R CMD check results
 
