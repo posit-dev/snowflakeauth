@@ -36,7 +36,9 @@ snowflake_credentials <- function(
     SNOWFLAKE_JWT = keypair_credentials(
       params$account,
       params$user,
-      params$private_key_file %||% params$private_key,
+      params$private_key_file %||%
+        params$private_key %||%
+        params$private_key_path,
       spcs_endpoint,
       role
     ),

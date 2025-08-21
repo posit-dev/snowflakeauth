@@ -34,7 +34,6 @@ keypair_credentials <- function(
 
 # Generate a JWT that can be used for Snowflake "key-pair" authentication.
 generate_jwt <- function(account, user, private_key, iat = NULL, jti = NULL) {
-  check_installed("jose", "for key-pair authentication")
   key <- openssl::read_key(private_key)
   if (is.null(iat)) {
     iat <- as.integer(Sys.time())

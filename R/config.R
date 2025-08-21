@@ -103,7 +103,11 @@ snowflake_connection <- function(name = NULL, ..., .config_dir = NULL) {
 
   # Setup authenticator
   params$authenticator <- params$authenticator %||% "snowflake"
-  if (!is_empty(params$private_key) || !is_empty(params$private_key_file)) {
+  if (
+    !is_empty(params$private_key) ||
+      !is_empty(params$private_key_file) ||
+      !is_empty(params$private_key_path)
+  ) {
     params$authenticator <- "SNOWFLAKE_JWT"
   }
 
@@ -340,7 +344,7 @@ default_config_dir <- function(os = NULL) {
   # Check environment variables first
   snowflake_home_env <- Sys.getenv("SNOWFLAKE_HOME")
   if (nzchar(snowflake_home_env)) {
-    return(snowflake_home_env)
+    return(path.expand(snowflake_home_env))
   }
 
   snowflake_home <- path.expand("~/.snowflake")
@@ -371,7 +375,7 @@ default_config_dir <- function(os = NULL) {
     unix = "~/.config/snowflake"
   )
 
-  os_paths[[os]]
+  path.expand(os_paths[[os]])
 }
 
 #' Reports whether a default connection is available
