@@ -61,3 +61,44 @@ test_that("exchange_jwt_for_token handles errors correctly", {
     error = TRUE
   )
 })
+
+test_that("JWT generation works with encrypted private key and passphrase", {
+  params <- list(
+    private_key_file_pwd = "password"
+  )
+
+  jwt <- generate_jwt(
+    "account",
+    "user",
+    test_path("encrypted_rsa_key.p8"),
+    iat = 1730393963,
+    jti = "jW9J6WVE1DnD1VQguNqy1o3HwWbE3PWl8Ty8RpAzd2E"
+  )
+
+  # Verify the JWT was created successfully
+  expect_type(jwt, "character")
+
+  # Verify JWT structure
+  jwt_parts <- jose::jwt_split(jwt)
+  expect_equal(jwt_parts$header$alg, "RS256")
+  expect_equal(jwt_parts$payload$sub, "ACCOUNT.USER")
+})
+
+test_that("keypair_credentials works with encrypted private key", {
+  params <- list(
+    account = "testaccount",
+    user = "testuser",
+    private_key_file = test_path("encrypted_rsa_key.p8"),
+    private_key_file_pwd = "password",
+    authenticator = "SNOWFLAKE_JWT"
+  )
+
+  creds <- keypair_credentials(
+    params$account,
+    params$user,
+    params$private_key_file
+  )
+  expect_type(creds, "list")
+  expect_true("Authorization" %in% names(creds))
+  expect_equal(creds$`X-Snowflake-Authorization-Token-Type`, "KEYPAIR_JWT")
+})

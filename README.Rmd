@@ -97,9 +97,6 @@ snowflake_credentials(conn)
 
 - No support for SSO authentication using a browser.
 
-- No support for key-pair authentication with [password-protected private
-  keys](https://docs.snowflake.com/en/user-guide/key-pair-auth#generate-the-private-key).
-
 - No support for [connection
   caching](https://docs.snowflake.com/en/user-guide/admin-security-fed-auth-use#using-connection-caching-to-minimize-the-number-of-prompts-for-authentication-optional).
 

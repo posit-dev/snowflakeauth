@@ -34,7 +34,30 @@ keypair_credentials <- function(
 
 # Generate a JWT that can be used for Snowflake "key-pair" authentication.
 generate_jwt <- function(account, user, private_key, iat = NULL, jti = NULL) {
-  key <- openssl::read_key(private_key)
+  # password callback that searches parent environments for private_key_file_pwd
+  # called by openssl only if the key is encrypted
+  password_cb <- function(prompt = "") {
+    for (i in seq_len(sys.nframe())) {
+      frame_env <- sys.frame(i)
+      if (rlang::env_has(frame_env, "params")) {
+        params_val <- rlang::env_get(frame_env, "params")
+        if (is.list(params_val) && !is.null(params_val$private_key_file_pwd)) {
+          pwd <- params_val$private_key_file_pwd
+
+          if (inherits(pwd, "snowflake_redacted")) {
+            pwd <- unclass(pwd)[1]
+          }
+          return(as.character(pwd))
+        }
+      }
+    }
+
+    cli::cli_abort(
+      "Encrypted private key requires private_key_file_pwd parameter"
+    )
+  }
+
+  key <- openssl::read_key(private_key, password = password_cb)
   if (is.null(iat)) {
     iat <- as.integer(Sys.time())
   }

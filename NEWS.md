@@ -3,6 +3,7 @@
 * `jose` and `openssl` have been upgraded to required dependencies.
 * Paths are expanded when `SNOWFLAKE_HOME` is set.
 * `private_key_path` is permitted as a paramter when using JWT authentication.
+* Added support for passphrase-protected private keys.
 
 # snowflakeauth 0.1.2
 
