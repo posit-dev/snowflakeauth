@@ -17,10 +17,10 @@ Imports:
     curl,
     jsonlite,
     RcppTOML,
-    rlang
-Suggests:
+    rlang,
     jose,
-    openssl,
+    openssl
+Suggests:
     testthat (>= 3.0.0),
     withr
 Roxygen: list(markdown = TRUE)
