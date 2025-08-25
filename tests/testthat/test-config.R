@@ -1,55 +1,67 @@
 test_that("default_config_dir finds config directories correctly", {
-  withr::with_envvar(
+  dir <- withr::local_tempdir()
+
+  # Redefine HOME to be a path that does not exist in case the user running
+  # these tests has $HOME/.snowflake
+  home <- file.path(dir, "home")
+
+  withr::local_envvar(
     c(
+      HOME = home,
       SNOWFLAKE_HOME = NA,
       XDG_CONFIG_HOME = test_path(".")
-    ),
-    expect_equal(
-      default_config_dir(),
-      file.path(test_path("."), "snowflake")
     )
+  )
+
+  expect_equal(
+    default_config_dir(),
+    file.path(test_path("."), "snowflake")
   )
 })
 
 test_that("SNOWFLAKE_HOME environment variable is respected", {
-  withr::with_envvar(
-    c(SNOWFLAKE_HOME = test_path(".")),
-    expect_equal(
-      snowflake_connection("test1")[["authenticator"]],
-      "oauth"
-    )
+  withr::local_envvar(
+    c(SNOWFLAKE_HOME = test_path("."))
+  )
+
+  expect_equal(
+    snowflake_connection("test1")[["authenticator"]],
+    "oauth"
   )
 })
 
 test_that("generic environment variables are respected", {
-  withr::with_envvar(
+  withr::local_envvar(
     c(
       SNOWFLAKE_ACCOUNT = "env_account",
       SNOWFLAKE_USER = "env_user",
       SNOWFLAKE_PASSWORD = "env_password",
       SNOWFLAKE_AUTHENTICATOR = "env_authenticator"
-    ),
-    expect_equal(
-      snowflake_connection(.config_dir = tempdir())[["account"]],
-      "env_account"
     )
+  )
+
+  expect_equal(
+    snowflake_connection(.config_dir = tempdir())[["account"]],
+    "env_account"
   )
 })
 
 test_that("user-provided connection params win over config.toml file params", {
-  config_dir <- tempdir()
-  withr::local_file(file.path(config_dir, "config.toml"))
+  config_dir <- withr::local_tempdir()
+
+  cfg <- file.path(config_dir, "config.toml")
+
   writeLines(
     c(
       'default_connection_name = "test1"',
-      '[connections.test1]',
+      "[connections.test1]",
       'account = "testorg-test_account"',
       'user = "user"',
       'password = "password"',
       'role = "role"',
       'authenticator = "externalbrowser"'
     ),
-    file.path(config_dir, "config.toml")
+    cfg
   )
 
   conn <- snowflake_connection(
@@ -78,16 +90,18 @@ test_that("user-provided connection params win over generic environment variable
 })
 
 test_that("SNOWFLAKE_CONNECTIONS_* win over config.toml params", {
-  config_dir <- tempdir()
-  withr::local_file(file.path(config_dir, "config.toml"))
+  config_dir <- withr::local_tempdir()
+
+  cfg <- file.path(config_dir, "config.toml")
+
   writeLines(
     c(
       'default_connection_name = "test1"',
-      '[connections.test1]',
+      "[connections.test1]",
       'account = "testorg-test_account"',
       'role = "role"'
     ),
-    file.path(config_dir, "config.toml")
+    cfg
   )
 
   withr::local_envvar(
@@ -131,28 +145,30 @@ test_that("the connections.toml file is parsed correctly", {
 })
 
 test_that("connections.toml wins if present with config.toml", {
-  config_dir <- tempdir()
+  config_dir <- withr::local_tempdir()
 
-  withr::local_file(config_dir, "connections.toml")
+  cfg <- file.path(config_dir, "config.toml")
+  connections <- file.path(config_dir, "connections.toml")
+
   writeLines(
     c(
-      '[default]',
+      "[default]",
       'account = "testorg-test-account"',
       'user = "user"',
       'role = "role"',
-      '[secondary]',
+      "",
+      "[secondary]",
       'account = "secondary-test-account"',
       'user = "user"',
       'role = "role"'
     ),
-    file.path(config_dir, "connections.toml")
+    connections
   )
-
-  withr::local_file(file.path(config_dir, "config.toml"))
   writeLines(
     'default_connection_name = "secondary"',
-    file.path(config_dir, "config.toml")
+    cfg
   )
+
   expect_equal(
     snowflake_connection(.config_dir = config_dir)[["account"]],
     "secondary-test-account"
@@ -166,70 +182,89 @@ test_that("connections.toml wins if present with config.toml", {
 })
 
 test_that("conflicting config.toml and connections.toml produce an error", {
-  config_dir <- tempdir()
+  config_dir <- withr::local_tempdir()
 
-  withr::local_file(config_dir, "connections.toml")
+  cfg <- file.path(config_dir, "config.toml")
+  connections <- file.path(config_dir, "connections.toml")
+
   writeLines(
     c(
-      '[default]',
+      "[default]",
       'account = "testorg-test-account"',
       'user = "user"',
       'role = "role"',
-      '[secondary]',
+      "",
+      "[secondary]",
       'account = "secondary-test-account"',
       'user = "user"',
       'role = "role"'
     ),
-    file.path(config_dir, "connections.toml")
+    connections
   )
-
-  withr::local_file(file.path(config_dir, "config.toml"))
   writeLines(
     'default_connection_name = "test1"',
-    file.path(config_dir, "config.toml")
+    cfg
   )
+
   expect_error(snowflake_connection(.config_dir = config_dir))
 })
 
 test_that("SNOWFLAKE_DEFAULT_CONNECTION_NAME wins if set", {
-  # Test that the SNOWFLAKE_DEFAULT_CONNECTION_NAME environment variable is respected.
-  withr::with_envvar(
-    c(SNOWFLAKE_DEFAULT_CONNECTION_NAME = "test2"),
-    expect_equal(
-      snowflake_connection(.config_dir = test_path("."))[["account"]],
-      "testorg-test_account2"
-    )
+  # Confirm that SNOWFLAKE_DEFAULT_CONNECTION_NAME is respected.
+  withr::local_envvar(
+    c(SNOWFLAKE_DEFAULT_CONNECTION_NAME = "test2")
+  )
+
+  expect_equal(
+    snowflake_connection(.config_dir = test_path("."))[["account"]],
+    "testorg-test_account2"
   )
 })
 
+test_that("without incoming field values, connections.toml is required", {
+  config_dir <- withr::local_tempdir()
+  expect_snapshot(
+    snowflake_connection(.config_dir = config_dir),
+    error = TRUE,
+    transform = function(x) {
+      gsub("'/[^']+/([^/']+)'", "'/CONFIG_DIR/\\1'", x)
+    }
+  )
+})
 
-test_that("connections can be created without a connections.toml file", {
-  expect_snapshot(snowflake_connection(.config_dir = "/test"), error = TRUE)
-  expect_snapshot(snowflake_connection(
-    account = "testorg-test_account",
-    user = "user",
-    role = "role",
-    authenticator = "externalbrowser",
-    .config_dir = "/test"
-  ))
+test_that("with incoming field values, connections.toml is not required", {
+  config_dir <- withr::local_tempdir()
+  expect_snapshot(
+    snowflake_connection(
+      account = "testorg-test_account",
+      user = "user",
+      role = "role",
+      authenticator = "externalbrowser",
+      .config_dir = config_dir
+    ),
+    transform = function(x) {
+      gsub("'/[^']+/([^/']+)'", "'/CONFIG_DIR/\\1'", x)
+    }
+  )
 })
 
 test_that("a default connection in config.toml is respected", {
-  config_dir <- tempdir()
-  withr::local_file(file.path(config_dir, "config.toml"))
+  config_dir <- withr::local_tempdir()
+  cfg <- file.path(config_dir, "config.toml")
+
   writeLines(
     c(
-      '[connections.secondary]',
+      "[connections.secondary]",
       'account = "secondary-test-account"',
       'user = "user"',
       'role = "role"',
-      '[connections.default]',
+      "[connections.default]",
       'account = "testorg-default"',
       'user = "default_user"',
       'role = "default_role"',
       'authenticator = "externalbrowser"'
     ),
-    file.path(config_dir, "config.toml")
+    cfg
   )
 
   expect_equal(
@@ -248,15 +283,14 @@ test_that("a default connection in config.toml is respected", {
 
 test_that("Workbench-managed credentials are detected correctly", {
   # Emulate the config.toml and connections.toml files written by Workbench.
-  config_dir <- tempfile("posit-workbench")
+  config_dir <- withr::local_tempdir()
   cfg <- file.path(config_dir, "config.toml")
   connections <- file.path(config_dir, "connections.toml")
-  on.exit(file.remove(cfg, connections, config_dir))
-  dir.create(config_dir)
+
   writeLines('default_connection_name = "workbench"', cfg)
   writeLines(
     c(
-      '[workbench]',
+      "[workbench]",
       'account = "testorg-test_account"',
       'token = "token"',
       'authenticator = "oauth"'
@@ -269,10 +303,7 @@ test_that("Workbench-managed credentials are detected correctly", {
   )
 
   expect_snapshot(
-    snowflake_connection(),
-    transform = function(x) {
-      gsub("'/[^']+/([^/']+)'", "'\\1'", x)
-    }
+    snowflake_connection()
   )
 })
 
