@@ -1,3 +1,24 @@
+quoted_path_transformer <- function(x) {
+  x <- gsub("'/[^']+/([^/']+)'", "'/CONFIG_DIR/\\1'", x)
+  gsub("'[a-zA-Z]:[/\\][^']+[/\\]([^/\\']+)'", "'/CONFIG_DIR/\\1'", x)
+}
+
+test_that("quoted path transformer", {
+  unix <- "Pass `account` or define a [] section with an account field in '/var/folders/f5/d_lvj8s17bx46zzhfr5gqywc0000gp/T//RtmpvFAajX/filec8d513d8d21/connections.toml'."
+  windows <- "Pass `account` or define a [] section with an account field in 'C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\RtmpeCBJA9/working_dir\\RtmpYn26aW\\file1e60da83468/connections.toml'."
+  expected <- "Pass `account` or define a [] section with an account field in '/CONFIG_DIR/connections.toml'."
+
+  expect_equal(
+    quoted_path_transformer(unix),
+    expected
+  )
+
+  expect_equal(
+    quoted_path_transformer(windows),
+    expected
+  )
+})
+
 test_that("default_config_dir finds config directories correctly", {
   dir <- withr::local_tempdir()
 
@@ -175,9 +196,7 @@ test_that("connections.toml wins if present with config.toml", {
   )
   expect_snapshot(
     snowflake_connection(.config_dir = config_dir),
-    transform = function(x) {
-      gsub("'/[^']+/([^/']+)'", "'\\1'", x)
-    }
+    transform = quoted_path_transformer
   )
 })
 
@@ -226,9 +245,7 @@ test_that("without incoming field values, connections.toml is required", {
   expect_snapshot(
     snowflake_connection(.config_dir = config_dir),
     error = TRUE,
-    transform = function(x) {
-      gsub("'/[^']+/([^/']+)'", "'/CONFIG_DIR/\\1'", x)
-    }
+    transform = quoted_path_transformer
   )
 })
 
@@ -242,9 +259,7 @@ test_that("with incoming field values, connections.toml is not required", {
       authenticator = "externalbrowser",
       .config_dir = config_dir
     ),
-    transform = function(x) {
-      gsub("'/[^']+/([^/']+)'", "'/CONFIG_DIR/\\1'", x)
-    }
+    transform = quoted_path_transformer
   )
 })
 
