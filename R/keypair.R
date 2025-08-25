@@ -90,7 +90,7 @@ exchange_jwt_for_token <- function(
   )
 
   handle <- curl::new_handle()
-  curl::handle_setopt(handle, postfields = formEncode(payload))
+  curl::handle_setopt(handle, postfields = form_encode(payload))
   curl::handle_setheaders(
     handle,
     `Content-Type` = "application/x-www-form-urlencoded",
@@ -109,4 +109,13 @@ exchange_jwt_for_token <- function(
 
   token <- rawToChar(resp$content)
   list(access_token = token, expires_in = 300L)
+}
+
+form_encode <- function(form_data) {
+  paste0(
+    curl::curl_escape(names(form_data)),
+    "=",
+    curl::curl_escape(form_data),
+    collapse = "&"
+  )
 }

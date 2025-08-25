@@ -63,14 +63,14 @@ exchange_oauth_token <- function(account_url, token, spcs_endpoint) {
     ))
   }
 
-  respContent <- jsonlite::fromJSON(
+  resp_json_content <- jsonlite::fromJSON(
     rawToChar(resp$content),
     simplifyVector = FALSE
   )
-  if (is.null(respContent[["data"]][["token"]])) {
+  if (is.null(resp_json_content[["data"]][["token"]])) {
     cli::cli_abort(
       "Unexpected response from server: {rawToChar(resp$content)}"
     )
   }
-  list(token = respContent[["data"]][["token"]])
+  list(token = resp_json_content[["data"]][["token"]])
 }

@@ -72,7 +72,7 @@ snowflake_connection <- function(name = NULL, ..., .config_dir = NULL) {
   # Extract connection data
   connections <- cfg$connections
   connection_name <- cfg$connection_name
-  connection_file <- cfg$connection_file %||%
+  connection_file <- cfg$connection_file %||% # nolint: object_usage_linter
     file.path(config_dir, "connections.toml")
 
   # Error if the specified connection doesn't exist
