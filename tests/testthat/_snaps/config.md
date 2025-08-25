@@ -116,20 +116,20 @@
       user: "user"
       authenticator: "snowflake"
 
-# connections can be created without a connections.toml file
+# without incoming field values, connections.toml is required
 
     Code
-      snowflake_connection(.config_dir = "/test")
+      snowflake_connection(.config_dir = config_dir)
     Condition
       Error in `snowflake_connection()`:
-      ! An `account` parameter is required when '/test/connections.toml' is missing or empty.
-      i Pass `account` or define a [] section with an account field in '/test/connections.toml'.
+      ! An `account` parameter is required when '/CONFIG_DIR/connections.toml' is missing or empty.
+      i Pass `account` or define a [] section with an account field in '/CONFIG_DIR/connections.toml'.
 
----
+# with incoming field values, connections.toml is not required
 
     Code
       snowflake_connection(account = "testorg-test_account", user = "user", role = "role",
-        authenticator = "externalbrowser", .config_dir = "/test")
+        authenticator = "externalbrowser", .config_dir = config_dir)
     Message
       <Snowflake connection>
       account: "testorg-test_account"
