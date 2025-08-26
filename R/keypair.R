@@ -3,10 +3,11 @@ keypair_credentials <- function(
   account,
   user,
   private_key,
+  private_key_pwd = NULL,
   spcs_endpoint = NULL,
   role = "PUBLIC"
 ) {
-  jwt <- generate_jwt(account, user, private_key)
+  jwt <- generate_jwt(account, user, private_key, private_key_pwd)
   # Important: the SPCS ingress handles key-pair authentication *differently*
   # than the REST API. In particular, we can't pass the signed JWT as a bearer
   # token, we have to go through an exchange step.
@@ -33,8 +34,19 @@ keypair_credentials <- function(
 }
 
 # Generate a JWT that can be used for Snowflake "key-pair" authentication.
-generate_jwt <- function(account, user, private_key, iat = NULL, jti = NULL) {
-  key <- openssl::read_key(private_key)
+generate_jwt <- function(
+  account,
+  user,
+  private_key,
+  private_key_pwd = NULL,
+  iat = NULL,
+  jti = NULL
+) {
+  key <- if (!is.null(private_key_pwd)) {
+    openssl::read_key(private_key, password = private_key_pwd)
+  } else {
+    openssl::read_key(private_key)
+  }
   if (is.null(iat)) {
     iat <- as.integer(Sys.time())
   }
