@@ -5,14 +5,17 @@ test_that("JWT generation works as expected", {
   jwt <- generate_jwt(
     "account",
     "user",
-    test_path("test_rsa_key1.p8"),
+    # Generated with:
+    # openssl genrsa 2048 | openssl pkcs8 -topk8 -inform PEM -out unencrypted_rsa_key.p8 -nocrypt
+    # https://docs.snowflake.com/en/user-guide/key-pair-auth#generate-the-private-key
+    test_path("unencrypted_rsa_key.p8"),
     iat = 1730393963,
     jti = "jW9J6WVE1DnD1VQguNqy1o3HwWbE3PWl8Ty8RpAzd2E"
   )
   expect_snapshot(jose::jwt_split(jwt))
 
   # Verify non-deterministic JWTs by checking against the wrong public key.
-  jwt <- generate_jwt("account", "user", test_path("test_rsa_key1.p8"))
+  jwt <- generate_jwt("account", "user", test_path("unencrypted_rsa_key.p8"))
   expect_error(
     jose::jwt_decode_sig(jwt, test_path("test_rsa_key2.pub")),
     regexp = "incorrect signature"
@@ -66,6 +69,9 @@ test_that("JWT generation works with encrypted private key and passphrase", {
   jwt <- generate_jwt(
     "account",
     "user",
+    # Generated with:
+    # openssl genrsa 2048 | openssl pkcs8 -topk8 -v2 des3 -inform PEM -out encrypted rsa_key.p8
+    # https://docs.snowflake.com/en/user-guide/key-pair-auth#generate-the-private-key
     test_path("encrypted_rsa_key.p8"),
     private_key_pwd = "password",
     iat = 1730393963,
