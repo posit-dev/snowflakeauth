@@ -39,6 +39,7 @@ snowflake_credentials <- function(
       params$private_key_file %||%
         params$private_key %||%
         params$private_key_path,
+      params$private_key_file_pwd,
       spcs_endpoint,
       role
     ),

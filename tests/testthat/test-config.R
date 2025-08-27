@@ -67,6 +67,35 @@ test_that("generic environment variables are respected", {
   )
 })
 
+test_that("generic environment variables are compatible with named connections", {
+  config_dir <- withr::local_tempdir()
+
+  cfg <- file.path(config_dir, "connections.toml")
+
+  writeLines(
+    c(
+      "[test1]",
+      'account = "testorg-test_account"',
+      'user = "user"',
+      'role = "role"',
+      'authenticator = "SNOWFLAKE_JWT"'
+    ),
+    cfg
+  )
+  withr::local_envvar(
+    c(
+      SNOWFLAKE_PRIVATE_KEY_FILE = "/nexiste/env_private_key_file.p8"
+    )
+  )
+
+  expect_equal(
+    snowflake_connection("test1", .config_dir = config_dir)[[
+      "private_key_file"
+    ]],
+    "/nexiste/env_private_key_file.p8"
+  )
+})
+
 test_that("user-provided connection params win over config.toml file params", {
   config_dir <- withr::local_tempdir()
 
