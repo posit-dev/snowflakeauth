@@ -4,7 +4,7 @@
 \alias{snowflake_connection}
 \title{Snowflake connection parameter configuration}
 \usage{
-snowflake_connection(name = NULL, ..., .config_dir = NULL)
+snowflake_connection(name = NULL, ..., .config_dir = NULL, .verbose = FALSE)
 }
 \arguments{
 \item{name}{A named connection. Defaults to
@@ -20,6 +20,10 @@ for details.}
 directory exists, otherwise it falls back to a platform-specific default.
 See \href{https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect#connecting-using-the-connections-toml-file}{Snowflake's documentation}
 for details.}
+
+\item{.verbose}{Logical; if \code{TRUE}, prints detailed information about
+configuration loading, including which files are read and how connection
+parameters are resolved. Defaults to \code{FALSE}.}
 }
 \value{
 An object of class \code{"snowflake_connection"}.
