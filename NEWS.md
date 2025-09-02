@@ -1,3 +1,5 @@
+# snowflakeauth (development version)
+
 # snowflakeauth 0.2.0
 
 * `jose` and `openssl` have been upgraded to required dependencies.
