@@ -71,12 +71,6 @@ snowflake_connection(
   private_key_file = "rsa_key.p8",
   private_key_file_pwd = "supersecret"
 )
-
-snowflake_connection(
-  account = "myaccount",
-  user = "me",
-  authenticator = "externalbrowser"
-)
 ```
 
 These parameters can then be used to retrieve credentials, which take the form
