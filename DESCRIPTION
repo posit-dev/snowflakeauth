@@ -21,6 +21,7 @@ Imports:
     jose,
     openssl
 Suggests:
+    httpuv,
     testthat (>= 3.0.0),
     withr
 Roxygen: list(markdown = TRUE)
