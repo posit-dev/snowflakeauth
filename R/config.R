@@ -311,10 +311,11 @@ load_config <- function(
     }
     connections <- RcppTOML::parseTOML(connections_toml, fromFile = TRUE)
 
-    # If both files exist, inform user we're using connections.toml
-    if (has_config_toml && length(connections) > 0) {
+    # If both files define connections, inform the user that connections.toml
+    # takes precedence.
+    if (length(result$connections) > 0 && length(connections) > 0) {
       cli::cli_inform(c(
-        "!" = "Both {.file connections.toml} and {.file config.toml} exist. Using {.file connections.toml}."
+        "!" = "Both {.file connections.toml} and {.file config.toml} define connections. {.file connections.toml} takes precedence."
       ))
 
       # Validate that connection name from config.toml exists in connections.toml

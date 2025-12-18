@@ -356,3 +356,44 @@ test_that("ambient credentials are detected correctly", {
   config_dir <- tempfile("snowflake")
   expect_false(has_a_default_connection("test1", .config_dir = config_dir))
 })
+
+test_that("warning appears when both files define connections", {
+  config_dir <- withr::local_tempdir()
+
+  cfg <- file.path(config_dir, "config.toml")
+  connections <- file.path(config_dir, "connections.toml")
+
+  # config.toml with connections section
+  writeLines(
+    c(
+      'default_connection_name = "default"',
+      "[connections.default]",
+      'account = "testorg-from-config"',
+      'user = "user"',
+      'role = "role"'
+    ),
+    cfg
+  )
+
+  # connections.toml also with connections
+  writeLines(
+    c(
+      "[default]",
+      'account = "testorg-from-connections"',
+      'user = "user"',
+      'role = "role"'
+    ),
+    connections
+  )
+
+  # Should warn and use connections.toml
+  expect_snapshot(
+    snowflake_connection(.config_dir = config_dir)
+  )
+
+  # Verify connections.toml won
+  expect_equal(
+    snowflake_connection(.config_dir = config_dir)[["account"]],
+    "testorg-from-connections"
+  )
+})
