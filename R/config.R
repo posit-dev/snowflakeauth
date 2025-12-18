@@ -92,6 +92,14 @@ snowflake_connection <- function(
 
   # Error if the specified connection doesn't exist
   if (!is.null(connection_name) && is.null(connections[[connection_name]])) {
+    if (!file.exists(connection_file)) {
+      cli::cli_abort(c(
+        "Named connection {.str {connection_name}} refers to a section in
+         {.file {connection_file}}, but that file does not exist.",
+        i = "Create it and define a {.field [{connection_name}]} section, or
+             omit the {.arg name} parameter."
+      ))
+    }
     cli::cli_abort(c(
       "Unknown connection {.str {connection_name}}.",
       i = "Try defining a {.field [{connection_name}]} section in {.file {connection_file}} or
@@ -110,6 +118,7 @@ snowflake_connection <- function(
 
   # Validate that account is provided
   if (is_empty(params$account)) {
+    connection_name <- connection_name %||% "default"
     cli::cli_abort(c(
       "An {.arg account} parameter is required when {.file {connection_file}} is missing or empty.",
       i = "Pass {.arg account} or define a {.field [{connection_name}]} section with an {.field account} field in {.file {connection_file}}."
