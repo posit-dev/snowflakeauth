@@ -4,6 +4,8 @@
   existing have been removed (#25).
 * Error messages when a named connection is requested but the `connections.toml`
   file does not exist are now clearer (#23).
+* Error messages when `connections.toml` exists but lacks a needed connection are
+  now more specific and helpful (#26).
 
 # snowflakeauth 0.2.0
 

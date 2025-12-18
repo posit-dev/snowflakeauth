@@ -61,8 +61,8 @@
       snowflake_connection("test5", .config_dir = dir)
     Condition
       Error in `snowflake_connection()`:
-      ! An `account` parameter is required when './connections.toml' is missing or empty.
-      i Pass `account` or define a [test5] section with an account field in './connections.toml'.
+      ! The default connection name "test5" is not defined in './connections.toml'.
+      i Define a [test5] section in './connections.toml', pass another connection by `name`, or pass connection parameters to `snowflake_connection()` directly.
 
 ---
 
@@ -86,8 +86,8 @@
       snowflake_connection(.config_dir = dir)
     Condition
       Error in `snowflake_connection()`:
-      ! An `account` parameter is required when './connections.toml' is missing or empty.
-      i Pass `account` or define a [default] section with an account field in './connections.toml'.
+      ! No default connection defined in './connections.toml'.
+      i Define a [default] section in './connections.toml', pass another connection by `name`, or pass connection parameters to `snowflake_connection()` directly.
 
 ---
 

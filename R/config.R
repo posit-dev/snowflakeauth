@@ -118,10 +118,31 @@ snowflake_connection <- function(
 
   # Validate that account is provided
   if (is_empty(params$account)) {
-    connection_name <- connection_name %||% "default"
+    # Give *highly specific* errors depending on how the user can resolve
+    # various cases.
+    if (!file.exists(connection_file) || length(connections) == 0) {
+      section_name <- connection_name %||% "default"
+      cli::cli_abort(c(
+        "An {.arg account} parameter is required when {.file {connection_file}}
+         is missing or empty.",
+        i = "Pass {.arg account} or define a {.field [{section_name}]}
+             section with an {.field account} field in {.file {connection_file}}."
+      ))
+    }
+    if (is.null(connection_name)) {
+      cli::cli_abort(c(
+        "No default connection defined in {.file {connection_file}}.",
+        i = "Define a {.field [default]} section in {.file {connection_file}},
+             pass another connection by {.arg name}, or pass connection
+             parameters to {.fn snowflake_connection} directly."
+      ))
+    }
     cli::cli_abort(c(
-      "An {.arg account} parameter is required when {.file {connection_file}} is missing or empty.",
-      i = "Pass {.arg account} or define a {.field [{connection_name}]} section with an {.field account} field in {.file {connection_file}}."
+      "The default connection name {.str {connection_name}} is not defined in
+       {.file {connection_file}}.",
+      i = "Define a {.field [{connection_name}]} section in
+           {.file {connection_file}}, pass another connection by {.arg name}, or
+           pass connection parameters to {.fn snowflake_connection} directly."
     ))
   }
 
