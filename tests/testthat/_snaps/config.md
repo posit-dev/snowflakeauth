@@ -109,7 +109,6 @@
     Code
       snowflake_connection(.config_dir = config_dir)
     Message
-      ! Both 'connections.toml' and 'config.toml' exist. Using 'connections.toml'.
       <Snowflake connection: secondary>
       account: "secondary-test-account"
       role: "role"
@@ -142,9 +141,20 @@
     Code
       snowflake_connection()
     Message
-      ! Both 'connections.toml' and 'config.toml' exist. Using 'connections.toml'.
       <Snowflake connection: workbench>
       account: "testorg-test_account"
       authenticator: "oauth"
       token: <REDACTED>
+
+# warning appears when both files define connections
+
+    Code
+      snowflake_connection(.config_dir = config_dir)
+    Message
+      ! Both 'connections.toml' and 'config.toml' define connections. 'connections.toml' takes precedence.
+      <Snowflake connection: default>
+      account: "testorg-from-connections"
+      role: "role"
+      user: "user"
+      authenticator: "snowflake"
 

@@ -1,5 +1,8 @@
 # snowflakeauth (development version)
 
+* Misleading warnings about the `config.toml` and `connections.toml` files both
+  existing have been removed (#25).
+
 # snowflakeauth 0.2.0
 
 * `jose` and `openssl` have been upgraded to required dependencies.
