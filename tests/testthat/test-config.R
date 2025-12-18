@@ -397,3 +397,13 @@ test_that("warning appears when both files define connections", {
     "testorg-from-connections"
   )
 })
+
+test_that("error message is clear when named connection requested but file missing", {
+  config_dir <- withr::local_tempdir()
+
+  expect_snapshot(
+    snowflake_connection("myconnection", .config_dir = config_dir),
+    error = TRUE,
+    transform = quoted_path_transformer
+  )
+})

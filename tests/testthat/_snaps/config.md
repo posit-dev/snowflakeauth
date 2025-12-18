@@ -87,7 +87,7 @@
     Condition
       Error in `snowflake_connection()`:
       ! An `account` parameter is required when './connections.toml' is missing or empty.
-      i Pass `account` or define a [] section with an account field in './connections.toml'.
+      i Pass `account` or define a [default] section with an account field in './connections.toml'.
 
 ---
 
@@ -122,7 +122,7 @@
     Condition
       Error in `snowflake_connection()`:
       ! An `account` parameter is required when '/CONFIG_DIR/connections.toml' is missing or empty.
-      i Pass `account` or define a [] section with an account field in '/CONFIG_DIR/connections.toml'.
+      i Pass `account` or define a [default] section with an account field in '/CONFIG_DIR/connections.toml'.
 
 # with incoming field values, connections.toml is not required
 
@@ -157,4 +157,13 @@
       role: "role"
       user: "user"
       authenticator: "snowflake"
+
+# error message is clear when named connection requested but file missing
+
+    Code
+      snowflake_connection("myconnection", .config_dir = config_dir)
+    Condition
+      Error in `snowflake_connection()`:
+      ! Named connection "myconnection" refers to a section in '/CONFIG_DIR/connections.toml', but that file does not exist.
+      i Create it and define a [myconnection] section, or omit the `name` parameter.
 
