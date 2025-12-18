@@ -69,9 +69,8 @@ the form of a one or more of HTTP headers:
 ``` r
 conn <- snowflake_connection(
   account = "myaccount",
-  user = "me",
-  authenticator = "oauth",
-  token = "token"
+  user = "myuser@company.com",
+  authenticator = "externalbrowser"
 )
 
 snowflake_credentials(conn)
@@ -79,7 +78,8 @@ snowflake_credentials(conn)
 
 ## Limitations
 
-- No support for SSO authentication using a browser.
+- Browser-based authentication is known to fail in Positron, but should work in
+  RStudio.
 
 - No support for [connection
   caching](https://docs.snowflake.com/en/user-guide/admin-security-fed-auth-use#using-connection-caching-to-minimize-the-number-of-prompts-for-authentication-optional).

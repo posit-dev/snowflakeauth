@@ -174,6 +174,13 @@ snowflake_connection <- function(
     ))
   }
 
+  # Validate external browser authentication
+  if (params$authenticator == "externalbrowser" && is.null(params$user)) {
+    cli::cli_abort(c(
+      "A {.arg user} parameter is required when using external browser authentication."
+    ))
+  }
+
   # Redact sensitive data
   params$password <- redact(params[["password"]])
   params$token <- redact(params[["token"]])
