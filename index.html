@@ -86,9 +86,8 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/snowflake_connection.html">snowflake_connection</a></span><span class="op">(</span></span>
 <span>  account <span class="op">=</span> <span class="st">"myaccount"</span>,</span>
-<span>  user <span class="op">=</span> <span class="st">"me"</span>,</span>
-<span>  authenticator <span class="op">=</span> <span class="st">"oauth"</span>,</span>
-<span>  token <span class="op">=</span> <span class="st">"token"</span></span>
+<span>  user <span class="op">=</span> <span class="st">"myuser@company.com"</span>,</span>
+<span>  authenticator <span class="op">=</span> <span class="st">"externalbrowser"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/snowflake_credentials.html">snowflake_credentials</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span></code></pre></div>
@@ -97,7 +96,7 @@
 <h2 id="limitations">Limitations<a class="anchor" aria-label="anchor" href="#limitations"></a>
 </h2>
 <ul>
-<li><p>No support for SSO authentication using a browser.</p></li>
+<li><p>Browser-based authentication is known to fail in Positron, but should work in RStudio.</p></li>
 <li><p>No support for <a href="https://docs.snowflake.com/en/user-guide/admin-security-fed-auth-use#using-connection-caching-to-minimize-the-number-of-prompts-for-authentication-optional" class="external-link">connection caching</a>.</p></li>
 <li><p>No support for direct username/password authentication, username/password authentication with MFA, or <a href="https://docs.snowflake.com/en/user-guide/admin-security-fed-auth-use#native-sso-okta-only" class="external-link">“Native SSO” authentication</a>, (which is Okta-only). These are not planned; please migrate to OAuth or key-pair authentication when a browser is not available.</p></li>
 </ul>
