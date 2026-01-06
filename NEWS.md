@@ -6,7 +6,7 @@
   file does not exist are now clearer (#23).
 * Error messages when `connections.toml` exists but lacks a needed connection are
   now more specific and helpful (#26).
-* Add support for `externalbrowser` authentication.
+* `externalbrowser` authentication is now supported.
 
 # snowflakeauth 0.2.0
 

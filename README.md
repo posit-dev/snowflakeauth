@@ -78,15 +78,16 @@ snowflake_credentials(conn)
 
 ## Supported Authentication Methods
 
-The following table details authentication methods supported by `snowflake_credentials()`:
+The following table details authentication methods supported by
+`snowflake_credentials()`:
 
 | Method | Supported | Notes |
-|----|:-:|:------|
+|----|:--:|:---|
 | Browser-based SSO | ✅ | Interactive, desktop-only |
-| Key-pair | ✅ | |
-| OAuth token | ✅ | |
-| Workload identity federation | ❌ | |
-| Programmatic access token (PAT) | ❌ | |
+| Key-pair | ✅ |  |
+| OAuth token | ✅ |  |
+| Workload identity federation | ❌ |  |
+| Programmatic access token (PAT) | ❌ |  |
 | OAuth 2.0 client credentials | ❌ | Rarely used, not planned |
 | OAuth 2.0 authorization code | ❌ | Rarely used, not planned |
 | Username and password | ❌ | Insecure, not planned |
@@ -95,8 +96,8 @@ The following table details authentication methods supported by `snowflake_crede
 
 ## Limitations
 
-- Browser-based authentication is known to fail in Positron, but should work in
-  RStudio.
+- Browser-based authentication is known to fail in Positron, but should
+  work in RStudio.
 
 - No support for on-disk [connection
   caching](https://docs.snowflake.com/en/user-guide/admin-security-fed-auth-use#using-connection-caching-to-minimize-the-number-of-prompts-for-authentication-optional).

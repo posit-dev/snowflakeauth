@@ -1,12 +1,10 @@
 ## Summary
 
-* Support for additional Snowflake configuration parameters, improved debug logging, and moving some optional dependencies to imports.
+This is a patch release that adds support for 'externalbrowser' authentication and improves error messages when configuration files are missing or misconfigured.
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
-
-* This is a new release.
+0 errors | 0 warnings | 0 notes
 
 ## revdepcheck results
 
