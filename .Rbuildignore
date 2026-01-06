@@ -13,3 +13,4 @@
 ^\.venv$
 ^\.Renviron$
 ^CRAN-SUBMISSION$
+^\.claude$
