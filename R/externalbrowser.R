@@ -153,7 +153,7 @@ request_sso_url <- function(account, user, callback_port) {
   if (resp$status_code >= 400) {
     cli::cli_abort(c(
       "Failed to obtain SSO URL from Snowflake",
-      i = "Status code: {.strong {resp$status_code}}",
+      i = "Status code: {.strong {resp$status_code}}"
     ))
   }
 
