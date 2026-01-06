@@ -1,4 +1,4 @@
-# snowflakeauth (development version)
+# snowflakeauth 0.2.1
 
 * Misleading warnings about the `config.toml` and `connections.toml` files both
   existing have been removed (#25).
