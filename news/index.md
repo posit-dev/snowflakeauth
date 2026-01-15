@@ -2,6 +2,8 @@
 
 ## snowflakeauth 0.2.1
 
+CRAN release: 2026-01-15
+
 - Misleading warnings about the `config.toml` and `connections.toml`
   files both existing have been removed
   ([\#25](https://github.com/posit-dev/snowflakeauth/issues/25)).
