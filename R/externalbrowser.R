@@ -5,7 +5,7 @@ externalbrowser_credentials <- function(
 ) {
   account <- params$account
   user <- params$user
-  if (!interactive()) {
+  if (!rlang::is_interactive()) {
     cli::cli_abort(c(
       "External browser authentication requires an interactive R session",
       "i" = "Use a different authenticator"
