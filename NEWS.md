@@ -1,5 +1,10 @@
 # snowflakeauth (development version)
 
+* [On-disk connection caching][id_tokens] in the system keyring is now
+  supported. Requires the `keyring` package.
+
+[id_tokens]: https://docs.snowflake.com/en/user-guide/admin-security-fed-auth-use#using-connection-caching-to-minimize-the-number-of-prompts-for-authentication-optional
+
 # snowflakeauth 0.2.1
 
 * Misleading warnings about the `config.toml` and `connections.toml` files both
