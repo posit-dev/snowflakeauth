@@ -44,6 +44,16 @@ externalbrowser_credentials <- function(
           session <- renew_session(account, cached)
           session$id_token <- session$id_token %||% cached$id_token
           cache$set(session)
+          # Update keyring if ID token changed
+          if (!is.null(session$id_token) && use_keyring()) {
+            keyring_cache_token(
+              account,
+              user,
+              "ID_TOKEN",
+              session$id_token,
+              session$id_token_expires_at
+            )
+          }
           return(list(
             Authorization = sprintf('Snowflake Token="%s"', session$token)
           ))
@@ -62,6 +72,7 @@ externalbrowser_credentials <- function(
         {
           session <- login_request(
             account,
+            user,
             data = list(
               AUTHENTICATOR = "ID_TOKEN",
               TOKEN = cached$id_token
@@ -81,6 +92,44 @@ externalbrowser_credentials <- function(
     }
   }
 
+  # Check the system keyring for a cached ID token.
+  if (use_keyring()) {
+    cached_token <- keyring_get_token(account, user, "ID_TOKEN")
+    if (!is.null(cached_token)) {
+      tryCatch(
+        {
+          session <- login_request(
+            account,
+            user,
+            data = list(
+              AUTHENTICATOR = "ID_TOKEN",
+              TOKEN = cached_token$token
+            )
+          )
+          cache$set(session)
+          # Note: we don't seem to get a new ID token with this flow (yet).
+          if (!is.null(session$id_token)) {
+            keyring_cache_token(
+              account,
+              user,
+              "ID_TOKEN",
+              session$id_token,
+              session$id_token_expires_at
+            )
+          }
+          return(list(
+            Authorization = sprintf('Snowflake Token="%s"', session$token)
+          ))
+        },
+        error = function(e) {
+          # Clear the cached ID token so we only fail this path once.
+          keyring_clear_token(account, user, "ID_TOKEN")
+          NULL
+        }
+      )
+    }
+  }
+
   # Request the user's SSO URL and "proof key" from Snowflake.
   port <- httpuv::randomPort()
   result <- request_sso_url(account, user, port)
@@ -94,6 +143,7 @@ externalbrowser_credentials <- function(
   # Exchange the identity token and proof key for an authentication token.
   session <- login_request(
     account,
+    user,
     data = list(
       AUTHENTICATOR = "EXTERNALBROWSER",
       TOKEN = token,
@@ -103,6 +153,17 @@ externalbrowser_credentials <- function(
 
   # Cache the session for headless refreshing (when possible).
   cache$set(session)
+
+  # Store the ID token (if any) in the system keyring.
+  if (!is.null(session$id_token) && use_keyring()) {
+    keyring_cache_token(
+      account,
+      user,
+      "ID_TOKEN",
+      session$id_token,
+      session$id_token_expires_at
+    )
+  }
 
   return(list(
     Authorization = sprintf('Snowflake Token="%s"', session$token)

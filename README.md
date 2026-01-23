@@ -99,9 +99,6 @@ The following table details authentication methods supported by
 - Browser-based authentication is known to fail in Positron, but should
   work in RStudio.
 
-- No support for on-disk [connection
-  caching](https://docs.snowflake.com/en/user-guide/admin-security-fed-auth-use#using-connection-caching-to-minimize-the-number-of-prompts-for-authentication-optional).
-
 ## License
 
 MIT (c) [Posit Software, PBC](https://posit.co)

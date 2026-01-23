@@ -118,12 +118,24 @@ has_expired <- function(expires_at, .now = Sys.time()) {
 }
 
 # Generic helper for calls to the /login-request endpoint.
-login_request <- function(account, data, extra_headers = list()) {
+login_request <- function(account, user, data, extra_headers = list()) {
   url <- sprintf(
     "https://%s.snowflakecomputing.com/session/v1/login-request",
     account
   )
-  body <- jsonlite::toJSON(list(data = data), auto_unbox = TRUE)
+  base_params <- list(
+    # Snowflake seems to whitelist what clients can request ID tokens, so
+    # masquerade as the Python Connector for now.
+    CLIENT_APP_ID = "PythonConnector",
+    CLIENT_APP_VERSION = "4.2.0",
+    ACCOUNT_NAME = account,
+    LOGIN_NAME = user,
+    SESSION_PARAMETERS = list(
+      # Request ID tokens, if allowed by the administrator.
+      CLIENT_STORE_TEMPORARY_CREDENTIAL = TRUE
+    )
+  )
+  body <- jsonlite::toJSON(list(data = c(base_params, data)), auto_unbox = TRUE)
   headers <- c(
     extra_headers,
     `Content-Type` = "application/json",

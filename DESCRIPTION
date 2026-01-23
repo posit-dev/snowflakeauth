@@ -22,6 +22,7 @@ Imports:
     openssl
 Suggests:
     httpuv,
+    keyring,
     testthat (>= 3.0.0),
     withr
 Roxygen: list(markdown = TRUE)
