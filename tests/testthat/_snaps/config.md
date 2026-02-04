@@ -167,3 +167,20 @@
       ! Named connection "myconnection" refers to a section in '/CONFIG_DIR/connections.toml', but that file does not exist.
       i Create it and define a [myconnection] section, or omit the `name` parameter.
 
+# WORKLOAD_IDENTITY authenticator requires token or token_file_path
+
+    Code
+      snowflake_connection("wif_missing_token", .config_dir = dir)
+    Condition
+      Error in `snowflake_connection()`:
+      ! One of `token` or `token_file_path` is required when using Workload Identity authentication.
+
+# WORKLOAD_IDENTITY authenticator requires workload_identity_provider
+
+    Code
+      snowflake_connection("wif_missing_provider", .config_dir = dir)
+    Condition
+      Error in `snowflake_connection()`:
+      ! A `workload_identity_provider` parameter is required when using Workload Identity authentication.
+      i Use `workload_identity_provider = "OIDC"` for OIDC provider.
+
