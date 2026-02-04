@@ -153,15 +153,31 @@ login_request <- function(account, data, user = NULL, extra_headers = list()) {
 
   resp <- curl::curl_fetch_memory(url, handle)
   if (resp$status_code >= 400) {
+    # Try to extract error details from the response body.
+    detail <- NULL
+    tryCatch({
+      content <- jsonlite::fromJSON(rawToChar(resp$content), simplifyVector = FALSE)
+      if (!is.null(content$code) && !is.null(content$message)) {
+        detail <- sprintf("Error %s: %s", content$code, content$message)
+      }
+    }, error = function(e) NULL)
     cli::cli_abort(c(
-      "Snowflake login request failed",
-      i = "Status code: {.strong {resp$status_code}}"
+      "Snowflake login request failed with status {resp$status_code}",
+      i = detail
     ))
   }
 
   content <- jsonlite::fromJSON(rawToChar(resp$content), simplifyVector = FALSE)
-  if (!isTRUE(content$success) || is.null(content$data)) {
-    cli::cli_abort("Received unexpected response during login request")
+  if (!isTRUE(content$success)) {
+    detail <- if (!is.null(content$code) && !is.null(content$message)) {
+      "Error code {content$code}: {content$message}"
+    } else {
+      content$message
+    }
+    cli::cli_abort(c("Snowflake login request failed", i = detail))
+  }
+  if (is.null(content$data)) {
+    cli::cli_abort("Received unexpected response during login request: missing data")
   }
 
   snowflake_session(content$data)
