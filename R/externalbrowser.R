@@ -72,7 +72,7 @@ externalbrowser_credentials <- function(
         {
           session <- login_request(
             account,
-            user,
+            user = user,
             data = list(
               AUTHENTICATOR = "ID_TOKEN",
               TOKEN = cached$id_token
@@ -100,7 +100,7 @@ externalbrowser_credentials <- function(
         {
           session <- login_request(
             account,
-            user,
+            user = user,
             data = list(
               AUTHENTICATOR = "ID_TOKEN",
               TOKEN = cached_token$token
@@ -143,7 +143,7 @@ externalbrowser_credentials <- function(
   # Exchange the identity token and proof key for an authentication token.
   session <- login_request(
     account,
-    user,
+    user = user,
     data = list(
       AUTHENTICATOR = "EXTERNALBROWSER",
       TOKEN = token,
