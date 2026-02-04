@@ -43,6 +43,9 @@ snowflake_credentials <- function(
       spcs_endpoint,
       role
     ),
+    WORKLOAD_IDENTITY = workload_identity_credentials(
+      params
+    ),
     externalbrowser = externalbrowser_credentials(params),
     cli::cli_abort(c(
       "Unsupported authenticator: {.str {params$authenticator}}.",

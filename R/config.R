@@ -174,6 +174,28 @@ snowflake_connection <- function(
     ))
   }
 
+  # Validate Workload Identity configuration
+  if (
+    params$authenticator == "WORKLOAD_IDENTITY" &&
+      is.null(params$token) &&
+      is.null(params$token_file_path)
+  ) {
+    cli::cli_abort(c(
+      "One of {.arg token} or {.arg token_file_path} is required when using Workload Identity authentication."
+    ))
+  }
+
+  # Validate provider for Workload Identity
+  if (
+    params$authenticator == "WORKLOAD_IDENTITY" &&
+      is.null(params$provider)
+  ) {
+    cli::cli_abort(c(
+      "A {.arg provider} parameter is required when using Workload Identity authentication.",
+      "i" = "Use {.code provider = \"OIDC\"} for OIDC provider."
+    ))
+  }
+
   # Validate external browser authentication
   if (params$authenticator == "externalbrowser" && is.null(params$user)) {
     cli::cli_abort(c(
