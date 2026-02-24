@@ -14,3 +14,4 @@
 ^\.Renviron$
 ^CRAN-SUBMISSION$
 ^\.claude$
+^revdep$
