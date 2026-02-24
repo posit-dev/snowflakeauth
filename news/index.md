@@ -1,6 +1,6 @@
 # Changelog
 
-## snowflakeauth (development version)
+## snowflakeauth 0.2.2
 
 - [On-disk connection
   caching](https://docs.snowflake.com/en/user-guide/admin-security-fed-auth-use#using-connection-caching-to-minimize-the-number-of-prompts-for-authentication-optional)
