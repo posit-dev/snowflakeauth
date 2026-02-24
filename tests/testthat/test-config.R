@@ -407,3 +407,35 @@ test_that("error message is clear when named connection requested but file missi
     transform = quoted_path_transformer
   )
 })
+
+test_that("WORKLOAD_IDENTITY authenticator with token is parsed correctly", {
+  dir <- test_path(".")
+  conn <- snowflake_connection("wif_valid", .config_dir = dir)
+  expect_equal(conn[["authenticator"]], "WORKLOAD_IDENTITY")
+  expect_equal(conn[["workload_identity_provider"]], "OIDC")
+  expect_s3_class(conn[["token"]], "snowflake_redacted")
+})
+
+test_that("WORKLOAD_IDENTITY authenticator with token_file_path is parsed correctly", {
+  dir <- test_path(".")
+  conn <- snowflake_connection("wif_valid_token_file", .config_dir = dir)
+  expect_equal(conn[["authenticator"]], "WORKLOAD_IDENTITY")
+  expect_equal(conn[["workload_identity_provider"]], "OIDC")
+  expect_equal(conn[["token_file_path"]], "/path/to/token")
+})
+
+test_that("WORKLOAD_IDENTITY authenticator requires token or token_file_path", {
+  dir <- test_path(".")
+  expect_snapshot(
+    snowflake_connection("wif_missing_token", .config_dir = dir),
+    error = TRUE
+  )
+})
+
+test_that("WORKLOAD_IDENTITY authenticator requires workload_identity_provider", {
+  dir <- test_path(".")
+  expect_snapshot(
+    snowflake_connection("wif_missing_provider", .config_dir = dir),
+    error = TRUE
+  )
+})

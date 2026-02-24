@@ -2,8 +2,11 @@
 
 * [On-disk connection caching][id_tokens] in the system keyring is now
   supported. Requires the `keyring` package.
+* Workload identity authentication is now supported for [the `OIDC`
+  provider][oidc].
 
 [id_tokens]: https://docs.snowflake.com/en/user-guide/admin-security-fed-auth-use#using-connection-caching-to-minimize-the-number-of-prompts-for-authentication-optional
+[oidc]: https://docs.snowflake.com/en/user-guide/workload-identity-federation#authenticate-to-snowflake-using-a-custom-openid-connect-oidc-provider
 
 # snowflakeauth 0.2.1
 

@@ -86,7 +86,7 @@ The following table details authentication methods supported by
 | Browser-based SSO | ✅ | Interactive, desktop-only |
 | Key-pair | ✅ |  |
 | OAuth token | ✅ |  |
-| Workload identity federation | ❌ |  |
+| Workload identity federation | ✅ | OIDC only |
 | Programmatic access token (PAT) | ❌ |  |
 | OAuth 2.0 client credentials | ❌ | Rarely used, not planned |
 | OAuth 2.0 authorization code | ❌ | Rarely used, not planned |

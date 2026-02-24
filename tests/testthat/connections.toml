@@ -41,3 +41,29 @@ authenticator = "oauth"
 [test8]
 account = "testorg-test_account"
 private_key_file = "file"
+
+[wif_valid]
+account = "testorg-test_account"
+user = "user"
+authenticator = "WORKLOAD_IDENTITY"
+workload_identity_provider = "OIDC"
+token = "test_token"
+
+[wif_valid_token_file]
+account = "testorg-test_account"
+user = "user"
+authenticator = "WORKLOAD_IDENTITY"
+workload_identity_provider = "OIDC"
+token_file_path = "/path/to/token"
+
+[wif_missing_token]
+account = "testorg-test_account"
+user = "user"
+authenticator = "WORKLOAD_IDENTITY"
+workload_identity_provider = "OIDC"
+
+[wif_missing_provider]
+account = "testorg-test_account"
+user = "user"
+authenticator = "WORKLOAD_IDENTITY"
+token = "test_token"
