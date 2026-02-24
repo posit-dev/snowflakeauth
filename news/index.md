@@ -2,6 +2,11 @@
 
 ## snowflakeauth (development version)
 
+- [On-disk connection
+  caching](https://docs.snowflake.com/en/user-guide/admin-security-fed-auth-use#using-connection-caching-to-minimize-the-number-of-prompts-for-authentication-optional)
+  in the system keyring is now supported. Requires the `keyring`
+  package.
+
 ## snowflakeauth 0.2.1
 
 CRAN release: 2026-01-15
