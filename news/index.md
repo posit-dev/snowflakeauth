@@ -6,6 +6,8 @@
   caching](https://docs.snowflake.com/en/user-guide/admin-security-fed-auth-use#using-connection-caching-to-minimize-the-number-of-prompts-for-authentication-optional)
   in the system keyring is now supported. Requires the `keyring`
   package.
+- Workload identity authentication is now supported for [the `OIDC`
+  provider](https://docs.snowflake.com/en/user-guide/workload-identity-federation#authenticate-to-snowflake-using-a-custom-openid-connect-oidc-provider).
 
 ## snowflakeauth 0.2.1
 
