@@ -1,6 +1,6 @@
 ## Summary
 
-This is a patch release that adds support for 'externalbrowser' authentication and improves error messages when configuration files are missing or misconfigured.
+This is a patch release that adds support for 'WORKLOAD_IDENTITY' authentication and connection caching behind the scenes.
 
 ## R CMD check results
 
