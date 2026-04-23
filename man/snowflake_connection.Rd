@@ -39,6 +39,9 @@ The following is a list of common connection parameters. A more complete list
 can be found in the \href{https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-api#label-snowflake-connector-methods-connect}{documentation for the Snowflake Connector for Python}:
 \itemize{
 \item \code{account}: A Snowflake account identifier.
+\item \code{host}: An optional hostname for the Snowflake endpoint. When provided,
+this is used instead of the default \verb{\{account\}.snowflakecomputing.com}.
+Useful for private endpoints or non-standard deployments.
 \item \code{user}: A Snowflake username.
 \item \code{role}: The role to use for the connection.
 \item \code{schema}: The default schema to use for the connection.

@@ -42,6 +42,13 @@ authenticator = "oauth"
 account = "testorg-test_account"
 private_key_file = "file"
 
+[test_with_host]
+account = "testorg-test_account"
+user = "user"
+token = "token"
+authenticator = "oauth"
+host = "myhost.example.com"
+
 [wif_valid]
 account = "testorg-test_account"
 user = "user"

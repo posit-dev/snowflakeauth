@@ -1,5 +1,7 @@
 # snowflakeauth (development version)
 
+* The `host` field in `connections.toml` files is now supported.
+
 # snowflakeauth 0.2.2
 
 * [On-disk connection caching][id_tokens] in the system keyring is now

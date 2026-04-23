@@ -26,7 +26,7 @@ workload_identity_credentials <- function(
     # attempt to refresh the session.
     if (!has_expired(cached$master_expires_at)) {
       renewed <- tryCatch(
-        renew_session(account, cached),
+        renew_session(account, cached, host = params$host),
         error = function(e) NULL
       )
       if (!is.null(renewed)) {
@@ -66,7 +66,8 @@ workload_identity_credentials <- function(
       AUTHENTICATOR = "WORKLOAD_IDENTITY",
       PROVIDER = provider,
       TOKEN = token
-    )
+    ),
+    host = params$host
   )
 
   # Cache the session.

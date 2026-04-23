@@ -112,3 +112,38 @@ test_that("exchange_oauth_token handles missing token in response", {
     error = TRUE
   )
 })
+
+test_that("oauth_credentials uses host for SPCS exchange when provided", {
+  observed_url <- NULL
+  local_mocked_bindings(
+    exchange_oauth_token = function(account_url, token, spcs_endpoint) {
+      observed_url <<- account_url
+      list(token = "exchanged_token")
+    }
+  )
+
+  oauth_credentials(
+    "testaccount",
+    token = "test_token",
+    spcs_endpoint = "https://test.endpoint.com",
+    host = "myhost.example.com"
+  )
+  expect_equal(observed_url, "https://myhost.example.com")
+})
+
+test_that("oauth_credentials uses account-derived URL when host is not provided", {
+  observed_url <- NULL
+  local_mocked_bindings(
+    exchange_oauth_token = function(account_url, token, spcs_endpoint) {
+      observed_url <<- account_url
+      list(token = "exchanged_token")
+    }
+  )
+
+  oauth_credentials(
+    "testaccount",
+    token = "test_token",
+    spcs_endpoint = "https://test.endpoint.com"
+  )
+  expect_equal(observed_url, "https://testaccount.snowflakecomputing.com")
+})

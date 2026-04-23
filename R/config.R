@@ -14,6 +14,9 @@
 #' Snowflake Connector for Python](https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-api#label-snowflake-connector-methods-connect):
 #'
 #' - `account`: A Snowflake account identifier.
+#' - `host`: An optional hostname for the Snowflake endpoint. When provided,
+#'    this is used instead of the default `{account}.snowflakecomputing.com`.
+#'    Useful for private endpoints or non-standard deployments.
 #' - `user`: A Snowflake username.
 #' - `role`: The role to use for the connection.
 #' - `schema`: The default schema to use for the connection.
@@ -595,6 +598,7 @@ parse_env_vars <- function() {
   # https://docs.snowflake.com/en/developer-guide/snowflake-cli/connecting/configure-connections#use-environment-variables-for-snowflake-credentials
   generic_envvars <- c(
     "SNOWFLAKE_ACCOUNT",
+    "SNOWFLAKE_HOST",
     "SNOWFLAKE_USER",
     "SNOWFLAKE_PASSWORD",
     "SNOWFLAKE_DATABASE",

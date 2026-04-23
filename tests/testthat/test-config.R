@@ -439,3 +439,39 @@ test_that("WORKLOAD_IDENTITY authenticator requires workload_identity_provider",
     error = TRUE
   )
 })
+
+test_that("snowflake_url builds URLs correctly", {
+  expect_equal(
+    snowflake_url(account = "myaccount"),
+    "https://myaccount.snowflakecomputing.com"
+  )
+  expect_equal(
+    snowflake_url(host = "myhost.example.com", account = "myaccount"),
+    "https://myhost.example.com"
+  )
+  expect_equal(
+    snowflake_url(host = NULL, account = "myaccount"),
+    "https://myaccount.snowflakecomputing.com"
+  )
+  expect_equal(
+    snowflake_url(host = "", account = "myaccount"),
+    "https://myaccount.snowflakecomputing.com"
+  )
+})
+
+test_that("host field is read from connections.toml", {
+  dir <- test_path(".")
+  conn <- snowflake_connection("test_with_host", .config_dir = dir)
+  expect_equal(conn[["host"]], "myhost.example.com")
+})
+
+test_that("SNOWFLAKE_HOST environment variable is respected", {
+  withr::local_envvar(
+    c(
+      SNOWFLAKE_ACCOUNT = "env_account",
+      SNOWFLAKE_HOST = "myhost.example.com"
+    )
+  )
+  conn <- snowflake_connection(.config_dir = tempdir())
+  expect_equal(conn[["host"]], "myhost.example.com")
+})
