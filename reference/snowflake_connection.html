@@ -89,6 +89,9 @@ parameters are resolved. Defaults to <code>FALSE</code>.</p></dd>
     <h2 id="common-parameters">Common parameters<a class="anchor" aria-label="anchor" href="#common-parameters"></a></h2>
     <p>The following is a list of common connection parameters. A more complete list
 can be found in the <a href="https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-api#label-snowflake-connector-methods-connect" class="external-link">documentation for the Snowflake Connector for Python</a>:</p><ul><li><p><code>account</code>: A Snowflake account identifier.</p></li>
+<li><p><code>host</code>: An optional hostname for the Snowflake endpoint. When provided,
+this is used instead of the default <code>{account}.snowflakecomputing.com</code>.
+Useful for private endpoints or non-standard deployments.</p></li>
 <li><p><code>user</code>: A Snowflake username.</p></li>
 <li><p><code>role</code>: The role to use for the connection.</p></li>
 <li><p><code>schema</code>: The default schema to use for the connection.</p></li>

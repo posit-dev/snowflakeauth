@@ -55,6 +55,11 @@ Python](https://docs.snowflake.com/en/developer-guide/python-connector/python-co
 
 - `account`: A Snowflake account identifier.
 
+- `host`: An optional hostname for the Snowflake endpoint. When
+  provided, this is used instead of the default
+  `{account}.snowflakecomputing.com`. Useful for private endpoints or
+  non-standard deployments.
+
 - `user`: A Snowflake username.
 
 - `role`: The role to use for the connection.

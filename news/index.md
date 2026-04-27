@@ -2,6 +2,8 @@
 
 ## snowflakeauth (development version)
 
+- The `host` field in `connections.toml` files is now supported.
+
 ## snowflakeauth 0.2.2
 
 CRAN release: 2026-02-25
