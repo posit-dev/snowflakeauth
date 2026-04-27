@@ -31,7 +31,8 @@ snowflake_credentials <- function(
       params$account,
       params$token,
       params$token_file_path,
-      spcs_endpoint
+      spcs_endpoint,
+      host = params$host
     ),
     SNOWFLAKE_JWT = keypair_credentials(
       params$account,
@@ -41,7 +42,8 @@ snowflake_credentials <- function(
         params$private_key_path,
       params$private_key_file_pwd,
       spcs_endpoint,
-      role
+      role,
+      host = params$host
     ),
     WORKLOAD_IDENTITY = workload_identity_credentials(params),
     externalbrowser = externalbrowser_credentials(params),
@@ -118,12 +120,23 @@ has_expired <- function(expires_at, .now = Sys.time()) {
   is.null(expires_at) || (as.integer(.now) + 5L) > expires_at
 }
 
+snowflake_url <- function(host = NULL, account = NULL) {
+  if (!is.null(host) && nzchar(host)) {
+    sprintf("https://%s", host)
+  } else {
+    sprintf("https://%s.snowflakecomputing.com", account)
+  }
+}
+
 # Generic helper for calls to the /login-request endpoint.
-login_request <- function(account, data, user = NULL, extra_headers = list()) {
-  url <- sprintf(
-    "https://%s.snowflakecomputing.com/session/v1/login-request",
-    account
-  )
+login_request <- function(
+  account,
+  data,
+  user = NULL,
+  extra_headers = list(),
+  host = NULL
+) {
+  url <- sprintf("%s/session/v1/login-request", snowflake_url(host, account))
   base_params <- list(
     # Snowflake seems to whitelist what clients can request ID tokens, so
     # masquerade as the Python Connector for now.
@@ -190,11 +203,8 @@ login_request <- function(account, data, user = NULL, extra_headers = list()) {
 }
 
 # Renew an existing Snowflake session using its "master" token.
-renew_session <- function(account, session) {
-  url <- sprintf(
-    "https://%s.snowflakecomputing.com/session/token-request",
-    account
-  )
+renew_session <- function(account, session, host = NULL) {
+  url <- sprintf("%s/session/token-request", snowflake_url(host, account))
   body <- jsonlite::toJSON(
     list(
       oldSessionToken = session$token,

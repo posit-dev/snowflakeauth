@@ -2,7 +2,8 @@ oauth_credentials <- function(
   account,
   token = NULL,
   token_file = NULL,
-  spcs_endpoint = NULL
+  spcs_endpoint = NULL,
+  host = NULL
 ) {
   if (!is.null(token_file)) {
     tryCatch(
@@ -25,7 +26,7 @@ oauth_credentials <- function(
     spcs_endpoint <- sub("^https?://", "", spcs_endpoint)
   }
 
-  account_url <- sprintf("https://%s.snowflakecomputing.com", account)
+  account_url <- snowflake_url(host, account)
   session_token <- exchange_oauth_token(account_url, token, spcs_endpoint)
 
   return(list(

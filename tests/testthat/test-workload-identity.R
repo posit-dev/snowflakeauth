@@ -64,7 +64,7 @@ test_that("workload_identity_credentials renews session when expired but master 
   )
 
   local_mocked_bindings(
-    renew_session = function(account, session) {
+    renew_session = function(account, session, host = NULL) {
       list(
         token = "renewed_session_token",
         expires_at = as.numeric(Sys.time()) + 3600,
@@ -106,14 +106,15 @@ test_that("workload_identity_credentials falls back to fresh auth when renewal f
   )
 
   local_mocked_bindings(
-    renew_session = function(account, session) {
+    renew_session = function(account, session, host = NULL) {
       stop("Renewal failed")
     },
     login_request = function(
       account,
       data,
       user = NULL,
-      extra_headers = list()
+      extra_headers = list(),
+      host = NULL
     ) {
       list(
         token = "fresh_session_token",
@@ -150,7 +151,8 @@ test_that("workload_identity_credentials does fresh auth when no cache", {
       account,
       data,
       user = NULL,
-      extra_headers = list()
+      extra_headers = list(),
+      host = NULL
     ) {
       expect_equal(data$AUTHENTICATOR, "WORKLOAD_IDENTITY")
       expect_equal(data$PROVIDER, "OIDC")
@@ -194,7 +196,7 @@ test_that("workload_identity_credentials skips renewal when master token expired
   )
 
   local_mocked_bindings(
-    renew_session = function(account, session) {
+    renew_session = function(account, session, host = NULL) {
       renewal_called <<- TRUE
       stop("Should not be called")
     },
@@ -202,7 +204,8 @@ test_that("workload_identity_credentials skips renewal when master token expired
       account,
       data,
       user = NULL,
-      extra_headers = list()
+      extra_headers = list(),
+      host = NULL
     ) {
       list(
         token = "fresh_session_token",
@@ -243,7 +246,8 @@ test_that("workload_identity_credentials prefers token_file_path over inline tok
       account,
       data,
       user = NULL,
-      extra_headers = list()
+      extra_headers = list(),
+      host = NULL
     ) {
       expect_equal(data$TOKEN, "file_token")
       list(

@@ -5,6 +5,7 @@ externalbrowser_credentials <- function(
 ) {
   account <- params$account
   user <- params$user
+  host <- params$host
   if (!rlang::is_interactive()) {
     cli::cli_abort(c(
       "External browser authentication requires an interactive R session",
@@ -41,7 +42,7 @@ externalbrowser_credentials <- function(
     if (!has_expired(cached$master_expires_at)) {
       tryCatch(
         {
-          session <- renew_session(account, cached)
+          session <- renew_session(account, cached, host = host)
           session$id_token <- session$id_token %||% cached$id_token
           cache$set(session)
           # Update keyring if ID token changed
@@ -76,7 +77,8 @@ externalbrowser_credentials <- function(
             data = list(
               AUTHENTICATOR = "ID_TOKEN",
               TOKEN = cached$id_token
-            )
+            ),
+            host = host
           )
           cache$set(session)
           return(list(
@@ -104,7 +106,8 @@ externalbrowser_credentials <- function(
             data = list(
               AUTHENTICATOR = "ID_TOKEN",
               TOKEN = cached_token$token
-            )
+            ),
+            host = host
           )
           cache$set(session)
           # Note: we don't seem to get a new ID token with this flow (yet).
@@ -131,7 +134,7 @@ externalbrowser_credentials <- function(
 
   # Request the user's SSO URL and "proof key" from Snowflake.
   port <- httpuv::randomPort()
-  result <- request_sso_url(account, user, port)
+  result <- request_sso_url(account, user, port, host = host)
   sso_url <- result$sso_url
   proof_key <- result$proof_key
 
@@ -147,7 +150,8 @@ externalbrowser_credentials <- function(
       AUTHENTICATOR = "EXTERNALBROWSER",
       TOKEN = token,
       PROOF_KEY = proof_key
-    )
+    ),
+    host = host
   )
 
   # Cache the session for headless refreshing (when possible).
@@ -184,10 +188,10 @@ is_hosted_session <- function() {
     !grepl("localhost", Sys.getenv("RSTUDIO_HTTP_REFERER"), fixed = TRUE)
 }
 
-request_sso_url <- function(account, user, callback_port) {
+request_sso_url <- function(account, user, callback_port, host = NULL) {
   url <- sprintf(
-    "https://%s.snowflakecomputing.com/session/authenticator-request",
-    account
+    "%s/session/authenticator-request",
+    snowflake_url(host, account)
   )
   body <- jsonlite::toJSON(
     list(

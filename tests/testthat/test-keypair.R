@@ -98,3 +98,22 @@ test_that("keypair_credentials works with encrypted private key", {
   expect_match(creds$Authorization, "^Bearer ")
   expect_equal(creds$`X-Snowflake-Authorization-Token-Type`, "KEYPAIR_JWT")
 })
+
+test_that("keypair_credentials uses host for SPCS exchange when provided", {
+  observed_url <- NULL
+  local_mocked_bindings(
+    exchange_jwt_for_token = function(account_url, jwt, spcs_endpoint, role) {
+      observed_url <<- account_url
+      list(access_token = "test_token")
+    }
+  )
+
+  keypair_credentials(
+    "testaccount",
+    "testuser",
+    test_path("unencrypted_rsa_key.p8"),
+    spcs_endpoint = "test.endpoint.com",
+    host = "myhost.example.com"
+  )
+  expect_equal(observed_url, "https://myhost.example.com")
+})

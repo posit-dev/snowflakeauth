@@ -5,7 +5,8 @@ keypair_credentials <- function(
   private_key,
   private_key_pwd = NULL,
   spcs_endpoint = NULL,
-  role = "PUBLIC"
+  role = "PUBLIC",
+  host = NULL
 ) {
   jwt <- generate_jwt(account, user, private_key, private_key_pwd)
   # Important: the SPCS ingress handles key-pair authentication *differently*
@@ -24,7 +25,7 @@ keypair_credentials <- function(
   if (grepl("^https?://", spcs_endpoint)) {
     spcs_endpoint <- sub("^https?://", "", spcs_endpoint)
   }
-  account_url <- sprintf("https://%s.snowflakecomputing.com", account)
+  account_url <- snowflake_url(host, account)
   token <- exchange_jwt_for_token(account_url, jwt, spcs_endpoint, role)
   # Yes, this is actually the format of the Authorization header that SPCS
   # requires.
