@@ -117,7 +117,7 @@ snowflake_session <- function(data, .now = Sys.time()) {
 
 # Check if a token timestamp will expire "in the next five minutes".
 has_expired <- function(expires_at, .now = Sys.time()) {
-  is.null(expires_at) || (as.integer(.now) + 5L) > expires_at
+  is.null(expires_at) || (as.integer(.now) + 300L) > expires_at
 }
 
 snowflake_url <- function(host = NULL, account = NULL) {
