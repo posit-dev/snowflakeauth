@@ -17,6 +17,7 @@ Snowflake platform.
 You can install `snowflakeauth` from CRAN with:
 
 ``` r
+
 install.packages("snowflakeauth")
 ```
 
@@ -24,6 +25,7 @@ Or, install the development version of `snowflakeauth` from
 [GitHub](https://github.com/) with:
 
 ``` r
+
 # install.packages("pak")
 pak::pak("posit-dev/snowflakeauth")
 ```
@@ -36,6 +38,7 @@ the Python Connector for Snowflake and the Snowflake CLI (or any other
 named connection, for that matter):
 
 ``` r
+
 library(snowflakeauth)
 
 snowflake_connection()
@@ -46,6 +49,7 @@ snowflake_connection(name = "testing")
 or you can define the parameters of a connection manually:
 
 ``` r
+
 snowflake_connection(
   account = "myaccount",
   user = "me",
@@ -58,6 +62,7 @@ These parameters can then be used to retrieve credentials, which take
 the form of a one or more of HTTP headers:
 
 ``` r
+
 conn <- snowflake_connection(
   account = "myaccount",
   user = "myuser@company.com",
@@ -72,18 +77,18 @@ snowflake_credentials(conn)
 The following table details authentication methods supported by
 [`snowflake_credentials()`](https://posit-dev.github.io/snowflakeauth/reference/snowflake_credentials.md):
 
-| Method                          | Supported | Notes                                    |
-|---------------------------------|:---------:|:-----------------------------------------|
-| Browser-based SSO               |    ✅     | Interactive, desktop-only                |
-| Key-pair                        |    ✅     |                                          |
-| OAuth token                     |    ✅     |                                          |
-| Workload identity federation    |    ✅     | OIDC only                                |
-| Programmatic access token (PAT) |    ❌     |                                          |
-| OAuth 2.0 client credentials    |    ❌     | Rarely used, not planned                 |
-| OAuth 2.0 authorization code    |    ❌     | Rarely used, not planned                 |
-| Username and password           |    ❌     | Insecure, not planned                    |
-| Username and password with MFA  |    ❌     | Not planned                              |
-| Native SSO (Okta-only)          |    ❌     | Superceded by other methods, not planned |
+| Method | Supported | Notes |
+|----|:--:|:---|
+| Browser-based SSO | ✅ | Interactive, desktop-only |
+| Key-pair | ✅ |  |
+| OAuth token | ✅ |  |
+| Workload identity federation | ✅ | OIDC only |
+| Programmatic access token (PAT) | ❌ |  |
+| OAuth 2.0 client credentials | ❌ | Rarely used, not planned |
+| OAuth 2.0 authorization code | ❌ | Rarely used, not planned |
+| Username and password | ❌ | Insecure, not planned |
+| Username and password with MFA | ❌ | Not planned |
+| Native SSO (Okta-only) | ❌ | Superceded by other methods, not planned |
 
 ## Limitations
 
