@@ -1,25 +1,28 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+
 
 # snowflakeauth
 
 <!-- badges: start -->
-
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![R-CMD-check](https://github.com/posit-dev/snowflakeauth/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/posit-dev/snowflakeauth/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-`snowflakeauth` is a toolkit for authenticating with Snowflake. It aims
-for compatibility with the `connections.toml` and `config.toml` files
-used by the [Snowflake Connector for
-Python](https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect)
+`snowflakeauth` is a toolkit for authenticating with Snowflake. It aims for
+compatibility with the `connections.toml` and `config.toml` files used by the
+[Snowflake Connector for Python](https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-connect)
 and the [Snowflake
 CLI](https://docs.snowflake.com/en/developer-guide/snowflake-cli/connecting/configure-connections),
-so that R users can use a consistent approach to Snowflake credentials
-across both languages.
+so that R users can use a consistent approach to Snowflake credentials across
+both languages.
 
-`snowflakeauth` is intended for use by R package authors targeting the
-Snowflake platform.
+`snowflakeauth` is intended for use by R package authors
+targeting the Snowflake platform.
 
 ## Installation
 
@@ -39,10 +42,11 @@ pak::pak("posit-dev/snowflakeauth")
 
 ## Example
 
-`snowflakeauth` can pick up on the default Snowflake connection
-parameters from the `connections.toml` and `config.toml` files used by
-the Python Connector for Snowflake and the Snowflake CLI (or any other
-named connection, for that matter):
+`snowflakeauth` can pick up on the default Snowflake connection parameters from
+the `connections.toml` and `config.toml` files used by the Python Connector for
+Snowflake and the Snowflake CLI (or any other named connection, for that
+matter):
+
 
 ``` r
 library(snowflakeauth)
@@ -54,6 +58,7 @@ snowflake_connection(name = "testing")
 
 or you can define the parameters of a connection manually:
 
+
 ``` r
 snowflake_connection(
   account = "myaccount",
@@ -63,8 +68,9 @@ snowflake_connection(
 )
 ```
 
-These parameters can then be used to retrieve credentials, which take
-the form of a one or more of HTTP headers:
+These parameters can then be used to retrieve credentials, which take the form
+of a one or more of HTTP headers:
+
 
 ``` r
 conn <- snowflake_connection(
@@ -78,26 +84,26 @@ snowflake_credentials(conn)
 
 ## Supported Authentication Methods
 
-The following table details authentication methods supported by
-`snowflake_credentials()`:
+The following table details authentication methods supported by `snowflake_credentials()`:
 
 | Method | Supported | Notes |
-|----|:--:|:---|
+|----|:-:|:------|
 | Browser-based SSO | ✅ | Interactive, desktop-only |
-| Key-pair | ✅ |  |
-| OAuth token | ✅ |  |
+| Local Snowflake OAuth | ✅ | Interactive, desktop-only |
+| Key-pair | ✅ | |
+| OAuth token | ✅ | |
 | Workload identity federation | ✅ | OIDC only |
-| Programmatic access token (PAT) | ❌ |  |
+| Programmatic access token (PAT) | ❌ | |
 | OAuth 2.0 client credentials | ❌ | Rarely used, not planned |
-| OAuth 2.0 authorization code | ❌ | Rarely used, not planned |
+| OAuth 2.0 authorization code | ❌ | For external IdPs, not planned |
 | Username and password | ❌ | Insecure, not planned |
 | Username and password with MFA | ❌ | Not planned |
 | Native SSO (Okta-only) | ❌ | Superceded by other methods, not planned |
 
 ## Limitations
 
-- Browser-based authentication is known to fail in Positron, but should
-  work in RStudio.
+- Browser-based authentication is known to fail in Positron, but should work in
+  RStudio.
 
 ## License
 
