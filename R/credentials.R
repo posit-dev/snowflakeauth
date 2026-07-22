@@ -47,9 +47,11 @@ snowflake_credentials <- function(
     ),
     WORKLOAD_IDENTITY = workload_identity_credentials(params),
     externalbrowser = externalbrowser_credentials(params),
+    oauth_authorization_code = oauth_authorization_code_credentials(params),
     cli::cli_abort(c(
       "Unsupported authenticator: {.str {params$authenticator}}.",
-      "i" = "Supported authenticators: oauth, SNOWFLAKE_JWT, externalbrowser"
+      "i" = "Supported authenticators: oauth, SNOWFLAKE_JWT, externalbrowser,
+             oauth_authorization_code"
     ))
   )
 }

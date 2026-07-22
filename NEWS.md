@@ -1,6 +1,11 @@
 # snowflakeauth (development version)
 
+* [Local Snowflake OAuth][local_oauth] authentication is now supported. Requires
+  the `httpuv` package (#41).
+
 * The `host` field in `connections.toml` files is now supported.
+
+[local_oauth]: https://docs.snowflake.com/en/user-guide/oauth-local-applications
 
 # snowflakeauth 0.2.2
 

@@ -74,3 +74,16 @@ account = "testorg-test_account"
 user = "user"
 authenticator = "WORKLOAD_IDENTITY"
 token = "test_token"
+
+[oauth_auth_code]
+account = "testaccount"
+authenticator = "oauth_authorization_code"
+
+[oauth_auth_code_with_role]
+account = "testaccount"
+authenticator = "oauth_authorization_code"
+role = "ANALYST"
+
+[oauth_auth_code_uppercase]
+account = "testaccount"
+authenticator = "OAUTH_AUTHORIZATION_CODE"

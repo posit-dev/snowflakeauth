@@ -158,6 +158,9 @@ snowflake_connection <- function(
   ) {
     params$authenticator <- "SNOWFLAKE_JWT"
   }
+  if (tolower(params$authenticator) == "oauth_authorization_code") {
+    params$authenticator <- "oauth_authorization_code"
+  }
 
   # Validate OAuth configuration
   if (
