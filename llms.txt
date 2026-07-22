@@ -80,12 +80,13 @@ The following table details authentication methods supported by
 | Method | Supported | Notes |
 |----|:--:|:---|
 | Browser-based SSO | ✅ | Interactive, desktop-only |
+| Local Snowflake OAuth | ✅ | Interactive, desktop-only |
 | Key-pair | ✅ |  |
 | OAuth token | ✅ |  |
 | Workload identity federation | ✅ | OIDC only |
 | Programmatic access token (PAT) | ❌ |  |
 | OAuth 2.0 client credentials | ❌ | Rarely used, not planned |
-| OAuth 2.0 authorization code | ❌ | Rarely used, not planned |
+| OAuth 2.0 authorization code | ❌ | For external IdPs, not planned |
 | Username and password | ❌ | Insecure, not planned |
 | Username and password with MFA | ❌ | Not planned |
 | Native SSO (Okta-only) | ❌ | Superceded by other methods, not planned |
