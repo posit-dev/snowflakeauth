@@ -9,6 +9,11 @@
 
 - The `host` field in `connections.toml` files is now supported.
 
+- Account identifiers are now normalised when generating JWTs for
+  key-pair authentication, so that regional, PrivateLink, and “global”
+  account formats work as expected
+  ([\#37](https://github.com/posit-dev/snowflakeauth/issues/37)).
+
 ## snowflakeauth 0.2.2
 
 CRAN release: 2026-02-25
