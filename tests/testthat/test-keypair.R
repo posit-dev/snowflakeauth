@@ -117,3 +117,23 @@ test_that("keypair_credentials uses host for SPCS exchange when provided", {
   )
   expect_equal(observed_url, "https://myhost.example.com")
 })
+
+test_that("JWT generation normalises account identifiers", {
+  skip_if_not_installed("jose")
+
+  subject_for <- function(account) {
+    jwt <- generate_jwt(
+      account,
+      "user",
+      test_path("unencrypted_rsa_key.p8"),
+      iat = 1730393963,
+      jti = "jW9J6WVE1DnD1VQguNqy1o3HwWbE3PWl8Ty8RpAzd2E"
+    )
+    jose::jwt_split(jwt)$payload$sub
+  }
+
+  expect_equal(subject_for("myaccount"), "MYACCOUNT.USER")
+  expect_equal(subject_for("myaccount.us-east-1.aws"), "MYACCOUNT.USER")
+  expect_equal(subject_for("myaccount.us-east-1.privatelink"), "MYACCOUNT.USER")
+  expect_equal(subject_for("myorg-myaccount.global"), "MYORG.USER")
+})
