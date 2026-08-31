@@ -1,6 +1,6 @@
 # Changelog
 
-## snowflakeauth (development version)
+## snowflakeauth 0.3.0
 
 - [Local Snowflake
   OAuth](https://docs.snowflake.com/en/user-guide/oauth-local-applications)
