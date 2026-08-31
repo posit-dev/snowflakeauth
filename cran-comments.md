@@ -1,6 +1,6 @@
 ## Summary
 
-This is a patch release that adds support for 'WORKLOAD_IDENTITY' authentication and connection caching behind the scenes.
+This is a minor release that adds support for 'local_oauth' authentication and makes key-pair authentication more robust.
 
 ## R CMD check results
 
@@ -8,7 +8,7 @@ This is a patch release that adds support for 'WORKLOAD_IDENTITY' authentication
 
 ## revdepcheck results
 
-We checked 1 reverse dependencies, comparing R CMD check results across CRAN and dev versions of this package.
+We checked 2 reverse dependencies, comparing R CMD check results across CRAN and dev versions of this package.
 
  * We saw 0 new problems
  * We failed to check 0 packages
