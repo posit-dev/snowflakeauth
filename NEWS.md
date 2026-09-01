@@ -1,3 +1,5 @@
+# snowflakeauth (development version)
+
 # snowflakeauth 0.3.0
 
 * [Local Snowflake OAuth][local_oauth] authentication is now supported. Requires
