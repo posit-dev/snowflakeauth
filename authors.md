@@ -11,7 +11,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/posit-dev/snowflakeauth/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/posit-dev/snowflakeauth/blob/v0.3.0/DESCRIPTION)
 
 Jacobs A, Aja E (2026). *snowflakeauth: Authentication Helpers for
 'Snowflake'*. R package version 0.3.0,
