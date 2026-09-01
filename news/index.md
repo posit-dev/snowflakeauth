@@ -1,5 +1,7 @@
 # Changelog
 
+## snowflakeauth (development version)
+
 ## snowflakeauth 0.3.0
 
 - [Local Snowflake
