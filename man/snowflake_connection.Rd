@@ -51,8 +51,9 @@ Useful for private endpoints or non-standard deployments.
 \item \code{private_key} or \code{private_key_file}: A path to a PEM-encoded private key
 for key-pair authentication.
 \item \code{private_key_file_pwd}: The passphrase for the private key, if any.
-\item \code{token}: The OAuth token to use for authentication.
-\item \code{token_file_path}: A path to an OAuth token to use for authentication.
+\item \code{token}: The OAuth or programmatic access token to use for authentication.
+\item \code{token_file_path}: A path to an OAuth or programmatic access token to use
+for authentication.
 \item \code{password}: The user's Snowflake password.
 }
 }

@@ -1,5 +1,7 @@
 # snowflakeauth (development version)
 
+* Programmatic access token (PAT) authentication is now supported (#45).
+
 # snowflakeauth 0.3.0
 
 * [Local Snowflake OAuth][local_oauth] authentication is now supported. Requires

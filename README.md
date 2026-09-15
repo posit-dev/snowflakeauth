@@ -88,7 +88,7 @@ The following table details authentication methods supported by
 | Key-pair | ✅ |  |
 | OAuth token | ✅ |  |
 | Workload identity federation | ✅ | OIDC only |
-| Programmatic access token (PAT) | ❌ |  |
+| Programmatic access token (PAT) | ✅ |  |
 | OAuth 2.0 client credentials | ❌ | Rarely used, not planned |
 | OAuth 2.0 authorization code | ❌ | For external IdPs, not planned |
 | Username and password | ❌ | Insecure, not planned |
