@@ -77,9 +77,11 @@ Python](https://docs.snowflake.com/en/developer-guide/python-connector/python-co
 
 - `private_key_file_pwd`: The passphrase for the private key, if any.
 
-- `token`: The OAuth token to use for authentication.
+- `token`: The OAuth or programmatic access token to use for
+  authentication.
 
-- `token_file_path`: A path to an OAuth token to use for authentication.
+- `token_file_path`: A path to an OAuth or programmatic access token to
+  use for authentication.
 
 - `password`: The user's Snowflake password.
 
