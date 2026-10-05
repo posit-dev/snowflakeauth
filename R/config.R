@@ -26,8 +26,9 @@
 #' - `private_key` or `private_key_file`: A path to a PEM-encoded private key
 #'    for key-pair authentication.
 #' - `private_key_file_pwd`: The passphrase for the private key, if any.
-#' - `token`: The OAuth token to use for authentication.
-#' - `token_file_path`: A path to an OAuth token to use for authentication.
+#' - `token`: The OAuth or programmatic access token to use for authentication.
+#' - `token_file_path`: A path to an OAuth or programmatic access token to use
+#'    for authentication.
 #' - `password`: The user's Snowflake password.
 #'
 #' @param name A named connection. Defaults to
@@ -161,6 +162,9 @@ snowflake_connection <- function(
   if (tolower(params$authenticator) == "oauth_authorization_code") {
     params$authenticator <- "oauth_authorization_code"
   }
+  if (tolower(params$authenticator) == "programmatic_access_token") {
+    params$authenticator <- "PROGRAMMATIC_ACCESS_TOKEN"
+  }
 
   # Validate OAuth configuration
   if (
@@ -170,6 +174,22 @@ snowflake_connection <- function(
   ) {
     cli::cli_abort(c(
       "One of {.arg token} or {.arg token_file_path} is required when using OAuth authentication."
+    ))
+  }
+
+  # Validate PAT configuration
+  if (
+    params$authenticator == "PROGRAMMATIC_ACCESS_TOKEN" &&
+      (is_empty(params$token) ||
+        is.na(params$token[[1]]) ||
+        !nzchar(params$token[[1]])) &&
+      (is_empty(params$token_file_path) ||
+        is.na(params$token_file_path[[1]]) ||
+        !nzchar(params$token_file_path[[1]]))
+  ) {
+    cli::cli_abort(c(
+      "One of {.arg token} or {.arg token_file_path} is required when using
+       PROGRAMMATIC_ACCESS_TOKEN authentication."
     ))
   }
 
