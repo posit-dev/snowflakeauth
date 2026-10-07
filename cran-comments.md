@@ -1,10 +1,20 @@
 ## Summary
 
-This is a minor release that adds support for 'local_oauth' authentication and makes key-pair authentication more robust.
+This is a patch release that adds support for 'PAT' authentication.
+
+More importantly, it updates the maintainer.
 
 ## R CMD check results
 
-0 errors | 0 warnings | 0 notes
+0 errors | 0 warnings | 1 note
+
+❯ checking CRAN incoming feasibility ... [5s/11s] NOTE
+  Maintainer: ‘Aaron Jacobs <aaron.jacobs@posit.co>’
+
+  New maintainer:
+    Aaron Jacobs <aaron.jacobs@posit.co>
+  Old maintainer(s):
+    E. David Aja <david@posit.co>
 
 ## revdepcheck results
 
