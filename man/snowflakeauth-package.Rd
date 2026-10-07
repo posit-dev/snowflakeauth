@@ -18,11 +18,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: E. David Aja \email{david@posit.co}
+\strong{Maintainer}: Aaron Jacobs \email{aaron.jacobs@posit.co}
 
 Authors:
 \itemize{
-  \item Aaron Jacobs \email{aaron.jacobs@posit.co}
+  \item E. David Aja \email{david@posit.co}
 }
 
 Other contributors:
