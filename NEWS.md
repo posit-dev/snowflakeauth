@@ -1,4 +1,4 @@
-# snowflakeauth (development version)
+# snowflakeauth 0.3.1
 
 * Programmatic access token (PAT) authentication is now supported (#45).
 
