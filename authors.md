@@ -2,9 +2,9 @@
 
 ## Authors
 
-- **Aaron Jacobs**. Author.
+- **Aaron Jacobs**. Author, maintainer.
 
-- **E. David Aja**. Author, maintainer.
+- **E. David Aja**. Author.
 
 - **Posit Software, PBC**. Copyright holder, funder.
 
@@ -14,13 +14,13 @@ Source:
 [`DESCRIPTION`](https://github.com/posit-dev/snowflakeauth/blob/main/DESCRIPTION)
 
 Jacobs A, Aja E (2026). *snowflakeauth: Authentication Helpers for
-'Snowflake'*. R package version 0.3.0.9000,
+'Snowflake'*. R package version 0.3.1,
 <https://posit-dev.github.io/snowflakeauth/>.
 
     @Manual{,
       title = {snowflakeauth: Authentication Helpers for 'Snowflake'},
       author = {Aaron Jacobs and E. David Aja},
       year = {2026},
-      note = {R package version 0.3.0.9000},
+      note = {R package version 0.3.1},
       url = {https://posit-dev.github.io/snowflakeauth/},
     }

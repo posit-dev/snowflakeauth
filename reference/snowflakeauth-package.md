@@ -17,11 +17,11 @@ Useful links:
 
 ## Author
 
-**Maintainer**: E. David Aja <david@posit.co>
+**Maintainer**: Aaron Jacobs <aaron.jacobs@posit.co>
 
 Authors:
 
-- Aaron Jacobs <aaron.jacobs@posit.co>
+- E. David Aja <david@posit.co>
 
 Other contributors:
 
