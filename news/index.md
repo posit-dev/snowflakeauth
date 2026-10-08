@@ -1,5 +1,7 @@
 # Changelog
 
+## snowflakeauth (development version)
+
 ## snowflakeauth 0.3.1
 
 CRAN release: 2026-10-07
